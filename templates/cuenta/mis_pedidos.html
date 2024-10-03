@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- ========================= SECTION CONTENT ========================= -->
+<section class="section-content padding-y bg">
+    {% include 'includes/alerts.html' %}
+
+    <div class="container">
+        <div class="row">
+            {% include 'includes/dashboard_sidebar.html' %}
+            <main class="col-md-9">
+                <article class="card">
+                    <header class="card-header">
+                        <strong class="d-inline-block mr-3">Pedidos de compra:</strong>
+                    </header>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table table-hover table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Número de pedido</th>
+                                            <th scope="col">Nombre de facturación</th>
+                                            <th scope="col">Teléfono</th>
+                                            <th scope="col">Total del pedido</th>
+                                            <th scope="col">Fecha</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if pedido %}
+                                            {% for item in pedido %}
+                                                <tr>
+                                                    <th scope="row">{{ item.pedido_numero }}</th>
+                                                    <td>{{ item.nombre_completo }}</td>
+                                                    <td>{{ item.telefono }}</td>
+                                                    <td>${{ item.pedido_total }}</td>
+                                                    <td>{{ item.created_at|date:"d-m-Y H:i" }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="5" class="text-center">No hay pedidos disponibles.</td>
+                                            </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div> <!-- row.// -->
+                    </div> <!-- card-body .// -->
+                </article> <!-- order-group.// -->
+            </main>
+        </div> <!-- row.// -->
+    </div>
+</section>
+<!-- ========================= SECTION CONTENT END// ========================= -->
+
+{% endblock %}
+
+
