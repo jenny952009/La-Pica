@@ -53,7 +53,7 @@
                             <a href="{{ carrito_item.producto.get_url }}" class="title text-dark">{{ carrito_item.producto.producto_nombre }}</a>
 
                             <p class="text-muted small">
-                              {% if carrito_item.variacion.all %
+                              {% if carrito_item.variacion.all %}
                                 {% for item in carrito_item.variacion.all %}
                                   {{ item.variacion_categoria | capfirst }} : {{ item.variation_value | capfirst }} <br>
                                 {% endfor %}

@@ -3,60 +3,78 @@
 
 {% block content %}
 <!-- ========================= SECTION MAIN ========================= -->
-
 <section class="section-intro padding-y-sm">
-<div class="container">
+	<div class="container">
+		<header class="section-heading">
+			<h3 class="section-title">La Picá de la Chabelita</h3>
+		</header><!-- sect-heading -->
+		<div class="intro-banner-wrap">
+			<img src="{% static 'images/frontis1.png' %}" class="img-fluid rounded">
+		</div>
 
-<div class="intro-banner-wrap">
-	<img src="{% static 'images/banners/blackfriday.png' %}" class="img-fluid rounded">
-
-</div>
-
-</div> <!-- container //  -->
+	</div> <!-- container //  -->
 </section>
 <!-- ========================= SECTION MAIN END// ========================= -->
 
 <!-- ========================= SECTION  ========================= -->
 <section class="section-name padding-y-sm">
-<div class="container">
+	<div class="container">
 
-<header class="section-heading">
-	<a href="{% url 'tienda' %}" class="btn btn-outline-primary float-right">Ver Todo</a>
-	<h3 class="section-title">Los más vendidos</h3>
-</header><!-- sect-heading -->
-
-
-<div class="row">
-
-	{% for producto in productos %}
-	<div class="col-md-3">
-		<div class="card card-product-grid">
-			<a href="{{ producto.get_url }}" class="img-wrap"> <img src="{{ producto.images.url }}"> </a>
-			<figcaption class="info-wrap">
-				<a href="{{ producto.get_url }}" class="title">{{producto.producto_nombre}}</a>
-				<div class="price mt-1">{{ producto.precio }}</div> <!-- price-wrap.// -->
+		<header class="section-heading">
+			<a href="{% url 'tienda' %}" class="btn btn-outline-primary float-right">Ver Todo</a>
+			<h3 class="section-title">Los menús más vendidos</h3>
+		</header><!-- sect-heading -->
 
 
-				<div class="rating-star">
-					<span>
-						<i class="fa fa-star{% if producto.averageReview < 0.5 %}-o{% elif producto.averageReview >= 0.5 and producto.averageReview < 1 %}-half-o {% endif %}" aria-hidden="true"></i>
-						<i class="fa fa-star{% if producto.averageReview < 1.5 %}-o{% elif producto.averageReview >= 1.5 and producto.averageReview < 2 %}-half-o {% endif %}" aria-hidden="true"></i>
-						<i class="fa fa-star{% if producto.averageReview < 2.5 %}-o{% elif producto.averageReview >= 2.5 and producto.averageReview < 3 %}-half-o {% endif %}" aria-hidden="true"></i>
-						<i class="fa fa-star{% if producto.averageReview < 3.5 %}-o{% elif producto.averageReview >= 3.5 and producto.averageReview < 4 %}-half-o {% endif %}" aria-hidden="true"></i>
-						<i class="fa fa-star{% if producto.averageReview < 4.5 %}-o{% elif producto.averageReview >= 4.5 and producto.averageReview < 5 %}-half-o {% endif %}" aria-hidden="true"></i>
-					</span>
+		<div class="row">
+
+			{% for producto in productos %}
+			<div class="col-md-3">
+				<div class="card card-product-grid">
+					<a href="{{ producto.get_url }}" class="img-wrap"> <img src="{{ producto.images.url }}"> </a>
+					<figcaption class="info-wrap">
+						<a href="{{ producto.get_url }}" class="title">{{producto.producto_nombre}}</a>
+						<div class="price mt-1">{{ producto.precio }}</div> <!-- price-wrap.// -->
+
+						<div class="rating-star">
+							<span>
+								<i class="fa fa-star{% if producto.averageReview < 0.5 %}-o{% elif producto.averageReview >= 0.5 and producto.averageReview < 1 %}-half-o {% endif %}"
+									aria-hidden="true"></i>
+								<i class="fa fa-star{% if producto.averageReview < 1.5 %}-o{% elif producto.averageReview >= 1.5 and producto.averageReview < 2 %}-half-o {% endif %}"
+									aria-hidden="true"></i>
+								<i class="fa fa-star{% if producto.averageReview < 2.5 %}-o{% elif producto.averageReview >= 2.5 and producto.averageReview < 3 %}-half-o {% endif %}"
+									aria-hidden="true"></i>
+								<i class="fa fa-star{% if producto.averageReview < 3.5 %}-o{% elif producto.averageReview >= 3.5 and producto.averageReview < 4 %}-half-o {% endif %}"
+									aria-hidden="true"></i>
+								<i class="fa fa-star{% if producto.averageReview < 4.5 %}-o{% elif producto.averageReview >= 4.5 and producto.averageReview < 5 %}-half-o {% endif %}"
+									aria-hidden="true"></i>
+							</span>
+						</div>
+
+					</figcaption>
 				</div>
-
-			</figcaption>
+			</div> <!-- col.// -->
+			{% endfor %}
 		</div>
-	</div> <!-- col.// -->
-	{% endfor %}
-</div>
-</div><!-- container // -->
+		<header class="section-heading">
+			<h3 class="section-title">
+				Nuestra Ubicación
+			</h3>
+		</header>
+		
+		<!-- sect-heading -->
+	</div><!-- container // -->
 </section>
 <!-- ========================= SECTION  END// ========================= -->
 
+<div class="map-responsive">
+	<iframe
+		src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3012.6604723670325!2d-70.7818068!3d-33.4533297!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662c2447c351629%3A0x6e74eda3a8b1f436!2sDonde%20La%20Carmencita!5e1!3m2!1ses-419!2scl!4v1728023583574!5m2!1ses-419!2scl"
+		style="border:0;box-shadow: 0 0 20px #2f4ba5;" allowfullscreen="" loading="lazy"
+		referrerpolicy="no-referrer-when-downgrade"></iframe>
+</div>
 </body>
+
 </html>
 
 {% endblock %}
