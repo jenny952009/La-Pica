@@ -9,8 +9,8 @@ from .forms import RevisarForm
 from django.contrib import messages
 from pedido.models import PedidoProducto
 
-from django.shortcuts import render
-from .models import Producto  # Asegúrate de importar tu modelo Producto
+#from django.shortcuts import render
+#from .models import Producto  # Asegúrate de importar tu modelo Producto
 
 
 # Create your views here.
@@ -43,7 +43,7 @@ def tienda(request, category_slug=None):
 
 def producto_detalle(request, category_slug, product_slug):
     try:
-        single_product = Producto.objects.get(category__slug=category_slug, slug=product_slug)
+        single_product = Producto.objects.get(categoria__slug=category_slug, slug=product_slug)
         in_cart = CarritoItem.objects.filter(carro__carrito_id=_carrito_id(request), producto=single_product).exists()
     except Exception as e:
         raise e
@@ -72,40 +72,7 @@ def producto_detalle(request, category_slug, product_slug):
 
     return render(request, 'tienda/producto_detalle.html', context)
 
-
-def search(request):
-    # Inicializa productos como un queryset vacío por defecto
-    productos = Producto.objects.none()
-    
-    # Obtener el parámetro de búsqueda
-    keyword = request.GET.get('keyword', '').strip()  # Se asegura de que no sea None y elimina espacios
-
-    if keyword:
-        # Filtrar productos por la palabra clave
-        productos = Producto.objects.filter(producto_nombre__icontains=keyword, is_available=True)
-
-    # Obtener el conteo de productos
-    producto_count = productos.count()
-
-    # Crear un mensaje de no encontrado si no hay productos
-    mensaje_no_encontrado = ''
-    if producto_count == 0:
-        mensaje_no_encontrado = f'No se encontraron productos para "{keyword}".'
-
-    # Verificar si hay productos disponibles
-    hay_productos = producto_count > 0
-
-    context = {
-        'productos': productos,
-        'producto_count': producto_count,
-        'hay_productos': hay_productos,
-        'mensaje_no_encontrado': mensaje_no_encontrado,  # Agregar el mensaje al contexto
-    }
-
-    return render(request, 'tienda/tienda.html', context)
-
-
-"""antiguo
+"""
 def search(request):
     if 'keyword' in request.GET:
         keyword = request.GET['keyword']
@@ -118,8 +85,30 @@ def search(request):
     }
 
     return render(request, 'tienda/tienda.html', context)
-"""
 
+    """
+def search(request):
+    productos = []  # Inicializa la lista vacía
+    producto_count = 0  # Inicializa el conteo
+
+    if 'keyword' in request.GET:
+        keyword = request.GET['keyword']
+        if keyword:
+            productos = Producto.objects.order_by('-created_date').filter(
+                Q(descripcion__icontains=keyword) | Q(producto_nombre__icontains=keyword)
+            )
+            producto_count = productos.count()
+
+    context = {
+        'productos': productos,
+        'producto_count': producto_count,
+    }
+
+    return render(request, 'tienda/tienda.html', context)
+    
+    
+    
+    
 def submit_review(request, producto_id):
     url = request.META.get('HTTP_REFERER')
     if request.method == 'POST':
@@ -135,7 +124,7 @@ def submit_review(request, producto_id):
                 data = RevisarRating()
                 data.subject = form.cleaned_data['subject']
                 data.rating = form.cleaned_data['rating']
-                data.revisar = form.cleaned_data['revisar']
+                data.review = form.cleaned_data['review']
                 data.ip = request.META.get('REMOTE_ADDR')
                 data.producto_id = producto_id
                 data.user_id = request.user.id
