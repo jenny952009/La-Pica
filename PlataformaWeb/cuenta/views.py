@@ -25,22 +25,15 @@ def registrar(request):
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             username = email.split("@")[0]
-
-            # Crear la cuenta de usuario
-            user = Cuenta.objects.create_user(
-                nombre=nombre,
-                apellido=apellido,
-                email=email,
-                username=username,
-                password=password
-            )
+            user = Cuenta.objects.create_user(nombre=nombre, apellido=apellido, email=email, username=username, password=password)
             user.telefono = telefono
             user.save()
-
-            # Crear el perfil del usuario
-            profile = UsuarioPerfil(user=user, profile_picture='default/default-user.png')
-            profile.save()
             
+            profile = UsuarioPerfil()
+            profile.user_id = user.id
+            profile.profile_picture = 'default/default-user.png'
+            profile.save()
+                                   
             current_site = get_current_site(request)
             mail_subject = 'Activa tu cuenta en La Pica de la Chabelita para continuar'
             body = render_to_string('cuenta/cuenta_verificacion_email.html', {
@@ -52,7 +45,7 @@ def registrar(request):
             send_email = EmailMessage(mail_subject, body, to=[email])
             send_email.send()
 
-            messages.success(request, 'Te has registrado exitosamente. Verifica tu correo para activar tu cuenta.')
+            #messages.success(request, 'Te has registrado exitosamente. Verifica tu correo para activar tu cuenta.')
             return redirect('/cuenta/login/?command=verification&email=' + email)
 
     context = {
@@ -70,31 +63,43 @@ def login(request):
 
         if user is not None:
             try:
-                carrito = Carrito.objects.get(carrito_id=_carrito_id(request))
-                is_cart_item_exist = CarritoItem.objects.filter(carrito=carrito).exists()
+                carro = Carrito.objects.get(carrito_id=_carrito_id(request))
+                is_carrito_item_exist = CarritoItem.objects.filter(carro=carro).exists()
                 
-                if is_cart_item_exist:
-                    # Actualizar los elementos del carrito
-                    producto_variacion = [list(item.variacion.all()) for item in CarritoItem.objects.filter(carrito=carrito)]
-                    carrito_items = CarritoItem.objects.filter(user=user)
+                if is_carrito_item_exist:
+                    carrito_item = CarritoItem.objects.filter(carro=carro)
+
+                    producto_variacion = []
+
+                    for item in carrito_item:
+                        variacion = item.variacion.all()  #variations en realidad
+                        producto_variacion.append(list(variacion))
+
+                    carrito_item = CarritoItem.objects.filter(user=user)
+                    ex_var_list = []
+                    id = []
                     
-                    ex_var_list = [list(item.variacion.all()) for item in carrito_items]
-                    ids = [item.id for item in carrito_items]
+                    for item in carrito_item:
+                        existing_variation = item.variacion.all()
+                        ex_var_list.append(list(existing_variation))
+                        id.append(item.id)
 
                     for pr in producto_variacion:
                         if pr in ex_var_list:
                             index = ex_var_list.index(pr)
-                            item_id = ids[index]
+                            item_id = id[index]
                             item = CarritoItem.objects.get(id=item_id)
-                            item.cantidad += 1
+                            item.cantidad +=1
                             item.user = user
                             item.save()
                         else:
-                            carrito_items = CarritoItem.objects.filter(carrito=carrito)
-                            for item in carrito_items:
+                            carrito_item = CarritoItem.objects.filter(carro=carro)
+                            for item in carrito_item:
                                 item.user = user
-                                item.save()
-            except Carrito.DoesNotExist:
+                                item.save()                 
+                    
+                    
+            except:
                 pass
 
             auth.login(request, user)
@@ -105,16 +110,18 @@ def login(request):
                 query = requests.utils.urlparse(url).query
                 params = dict(x.split('=') for x in query.split('&'))
                 if 'next' in params:
-                    next_page = params['next']
-                    return redirect(next_page)
+                    nextPage = params['next']
+                    return redirect(nextPage)
             except:
                 return redirect('dashboard')
+
         else:
             messages.error(request, 'Los datos son incorrectos')
             return redirect('login')
 
-    return render(request, 'cuenta/login.html')
-
+    return render(request, 'cuenta/login.html')    
+                
+                
 @login_required(login_url='login')
 def logout(request):
     auth.logout(request)
@@ -139,9 +146,11 @@ def activate(request, uidb64, token):
 
 @login_required(login_url='login')
 def dashboard(request):
-    pedidos = Pedido.objects.filter(user_id=request.user.id, is_ordered=True).order_by('-created_at')
+        
+    pedidos = Pedido.objects.order_by('-created_at').filter(user_id=request.user.id, is_ordered=True)
     pedido_count = pedidos.count()
-    userprofile = get_object_or_404(UsuarioPerfil, user=request.user)
+    
+    userprofile = UsuarioPerfil.objects.get(user_id=request.user.id)
 
     context = {
         'pedido_count': pedido_count,
@@ -206,7 +215,9 @@ def borrarPassword(request):
         else:
             messages.error(request, 'La contraseña de confirmación no concuerda')
             return redirect('borrarPassword')
-    return render(request, 'cuenta/borrarPassword.html')
+    else:    
+        
+         return render(request, 'cuenta/borrarPassword.html')
 
 def mis_pedidos(request):
     pedidos = Pedido.objects.filter(user=request.user, is_ordered=True).order_by('-created_at')
@@ -249,18 +260,21 @@ def cambio_password(request):
         user = Cuenta.objects.get(username__exact=request.user.username)
 
         if new_password == confirmar_password:
-            if user.check_password(current_password):
+            success = user.check_password(current_password)
+            if success:
                 user.set_password(new_password)
                 user.save()
+
                 messages.success(request, 'La contraseña se actualizó correctamente')
                 return redirect('cambio_password')
             else:
-                messages.error(request, 'Los datos no son válidos,, vuelve a intentar')
+                messages.error(request, 'Los datos no son válidos, ingresa una contraseña correcta')
                 return redirect('cambio_password')
         else:
-            messages.error(request, 'La contraseña de confirmación no concuerda')
+            messages.error(request, 'La contraseña no coincide con la confirmación')
             return redirect('cambio_password')
 
     return render(request, 'cuenta/cambio_password.html')
-
-
+ 
+            
+         
