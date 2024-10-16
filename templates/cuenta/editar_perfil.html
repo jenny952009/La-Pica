@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-{% load static %}  <!-- Asegúrate de cargar las etiquetas estáticas -->
+
+
 
 {% block content %}
 <!-- ========================= SECTION CONTENT ========================= -->
@@ -16,23 +17,22 @@
                     </header>
                     <div class="card-body">
                         <div class="text-right">
-                            {% if userprofile.profile_picture %}
-                                <img src="{{ userprofile.profile_picture.url }}" alt="Imagen de Perfil" width="100" style="border-radius:50%;">
-                            {% else %}
-                                <img src="{% static 'path/to/default/image.png' %}" alt="Imagen de perfil por defecto" width="100" style="border-radius:50%;">
-                            {% endif %}
-                        </div>
-
+                            <div class="text-right">
+                                <img src="{{ userprofile.profile_picture.url }}" alt="Imagen de Perfil" width="100" style="border-radius:50px;">
+                            </div>
+                    
                         <div class="row">
                             <div class="col-md-12">
-                                <form action="{% url 'editar_perfil' %}" method="post" enctype="multipart/form-data">
+                                <form class="" action="{% url 'editar_perfil' %}" method="post" enctype="multipart/form-data">
+
                                     {% csrf_token %}
 
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
-                                            <label for="nombre">Nombre(s)</label>
-                                            {{ usuario_form.nombre }}
-                                            {{ usuario_form.nombre.errors }}
+                                            <label for="">Nombre(s)</label>
+                                            {{ user_form.nombre }}
+                                            {{ user_form.nombre.errors }}
+
                                         </div>
 
                                         <div class="form-group col-md-6">
@@ -50,7 +50,8 @@
                                         </div>
 
                                         <div class="form-group col-md-6">
-                                            <label for="profile_picture">Imagen de perfil</label>
+                                            <label for="">Imagen de perfil</label>
+
                                             {{ profile_form.profile_picture }}
                                             {{ profile_form.profile_picture.errors }}
                                         </div>
@@ -58,13 +59,15 @@
 
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
-                                            <label for="direccion_1">Dirección</label>
+                                            <label for="">Dirección</label>
+
                                             {{ profile_form.direccion_1 }}
                                             {{ profile_form.direccion_1.errors }}
                                         </div>
 
                                         <div class="form-group col-md-6">
-                                            <label for="direccion_2">Detalles de dirección</label>
+                                            <label for="">Detalles de dirección</label>
+
                                             {{ profile_form.direccion_2 }}
                                             {{ profile_form.direccion_2.errors }}
                                         </div>
@@ -90,7 +93,8 @@
                                         </div>
                                     </div>
 
-                                    <input type="submit" name="save" value="Guardar cambios" class="btn btn-primary">
+                                    <input type="submit" name="Guardar" value="Guardar cambios" class="btn btn-primary">
+
                                 </form>
                             </div>
                         </div>
