@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+
+
 {% block content %}
 <!-- ========================= SECTION CONTENT ========================= -->
 <section class="section-content padding-y bg">
@@ -22,6 +24,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <form class="" action="{% url 'editar_perfil' %}" method="post" enctype="multipart/form-data">
+
                                     {% csrf_token %}
 
                                     <div class="form-row">
@@ -29,6 +32,7 @@
                                             <label for="">Nombre(s)</label>
                                             {{ user_form.nombre }}
                                             {{ user_form.nombre.errors }}
+
                                         </div>
 
                                         <div class="form-group col-md-6">
@@ -47,6 +51,7 @@
 
                                         <div class="form-group col-md-6">
                                             <label for="">Imagen de perfil</label>
+
                                             {{ profile_form.profile_picture }}
                                             {{ profile_form.profile_picture.errors }}
                                         </div>
@@ -55,12 +60,14 @@
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="">Dirección</label>
+
                                             {{ profile_form.direccion_1 }}
                                             {{ profile_form.direccion_1.errors }}
                                         </div>
 
                                         <div class="form-group col-md-6">
                                             <label for="">Detalles de dirección</label>
+
                                             {{ profile_form.direccion_2 }}
                                             {{ profile_form.direccion_2.errors }}
                                         </div>
@@ -87,6 +94,7 @@
                                     </div>
 
                                     <input type="submit" name="Guardar" value="Guardar cambios" class="btn btn-primary">
+
                                 </form>
                             </div>
                         </div>
