@@ -25,7 +25,7 @@ class Producto(models.Model):
     def __str__(self):
         return self.producto_nombre
 
-    def promedioRevisar(self):
+    def averageReview(self):
         reviews = RevisarRating.objects.filter(producto=self, status=True).aggregate(average=Avg('rating'))
         avg = 0
         if reviews['average'] is not None:
@@ -34,7 +34,7 @@ class Producto(models.Model):
 
 
     def countRevisar(self):
-        reviews = RevisarRating.objects.filter(producto=self, estado=True).aggregate(count=Count('id'))
+        reviews = RevisarRating.objects.filter(producto=self, status=True).aggregate(count=Count('id'))
         count = 0
         if reviews['count'] is not None:
             count = int(reviews['count'])
@@ -72,7 +72,7 @@ class RevisarRating(models.Model):
     producto= models.ForeignKey(Producto, on_delete=models.CASCADE)
     user = models.ForeignKey(Cuenta, on_delete=models.CASCADE)
     subject = models.CharField(max_length=100, blank=True)
-    revisar = models.CharField(max_length=500, blank=True)
+    review = models.CharField(max_length=500, blank=True)
     rating = models.FloatField()
     ip = models.CharField(max_length=20, blank=True)
     status = models.BooleanField(default=True)
