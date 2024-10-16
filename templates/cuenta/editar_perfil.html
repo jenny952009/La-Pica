@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+<!-- ========================= SECTION CONTENT ========================= -->
+<section class="section-content padding-y bg">
+    {% include 'includes/alerts.html' %}
+
+    <div class="container">
+        <div class="row">
+            {% include 'includes/dashboard_sidebar.html' %}
+            <main class="col-md-9">
+                <article class="card">
+                    <header class="card-header">
+                        <strong class="d-inline-block mr-3">Edita tu perfil de usuario:</strong>
+                    </header>
+                    <div class="card-body">
+                        <div class="text-right">
+                            <div class="text-right">
+                                <img src="{{ userprofile.profile_picture.url }}" alt="Imagen de Perfil" width="100" style="border-radius:50px;">
+                            </div>
+                    
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form class="" action="{% url 'editar_perfil' %}" method="post" enctype="multipart/form-data">
+
+                                    {% csrf_token %}
+
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="">Nombre(s)</label>
+                                            {{ user_form.nombre }}
+                                            {{ user_form.nombre.errors }}
+
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <label for="apellido">Apellido(s)</label>
+                                            {{ user_form.apellido }}
+                                            {{ user_form.apellido.errors }}
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="telefono">Teléfono</label>
+                                            {{ user_form.telefono }}
+                                            {{ user_form.telefono.errors }}
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <label for="">Imagen de perfil</label>
+
+                                            {{ profile_form.profile_picture }}
+                                            {{ profile_form.profile_picture.errors }}
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="">Dirección</label>
+
+                                            {{ profile_form.direccion_1 }}
+                                            {{ profile_form.direccion_1.errors }}
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <label for="">Detalles de dirección</label>
+
+                                            {{ profile_form.direccion_2 }}
+                                            {{ profile_form.direccion_2.errors }}
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-md-4">
+                                            <label for="pais">País</label>
+                                            {{ profile_form.pais }}
+                                            {{ profile_form.pais.errors }}
+                                        </div>
+
+                                        <div class="form-group col-md-4">
+                                            <label for="ciudad">Ciudad</label>
+                                            {{ profile_form.ciudad }}
+                                            {{ profile_form.ciudad.errors }}
+                                        </div>
+
+                                        <div class="form-group col-md-4">
+                                            <label for="region">Región</label>
+                                            {{ profile_form.region }}
+                                            {{ profile_form.region.errors }}
+                                        </div>
+                                    </div>
+
+                                    <input type="submit" name="Guardar" value="Guardar cambios" class="btn btn-primary">
+
+                                </form>
+                            </div>
+                        </div>
+
+                    </div> <!-- card-body .// -->
+
+                </article> <!-- order-group.// -->
+            </main>
+        </div> <!-- row.// -->
+    </div>
+
+</section>
+<!-- ========================= SECTION CONTENT END// ========================= -->
+
+{% endblock %}
