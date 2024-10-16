@@ -17,10 +17,8 @@ class CuentaAdmin(UserAdmin):
 
 class UsuarioPerfilAdmin(admin.ModelAdmin):
     def thumbnail(self, object):
-        if object.profile_picture:
             return format_html('<img src="{}" width="30" style="border-radius:50%;">'.format(object.profile_picture.url))
-        else:
-            return "No Image"
+      
     thumbnail.short_description = "Imagen de perfil"
     list_display = ('thumbnail', 'user', 'ciudad', 'region', 'pais')
 

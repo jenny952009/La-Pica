@@ -14,7 +14,6 @@ class MiCuentaManager(BaseUserManager):
             username=username,
             nombre=nombre,
             apellido=apellido,
-            is_active=True,  # Se establece en True por defecto
         )
 
         user.set_password(password)
@@ -77,7 +76,7 @@ class UsuarioPerfil(models.Model):
     direccion_2 = models.CharField(blank=True, max_length=100)
     profile_picture = models.ImageField(blank=True, upload_to='userprofile')
     ciudad = models.CharField(blank=True, max_length=20)
-    region = models.CharField(blank=True, max_length=5)
+    region = models.CharField(blank=True, max_length=20)
     pais = models.CharField(blank=True, max_length=20)
 
     def __str__(self):
