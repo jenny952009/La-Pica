@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa</title>
+    <style>
+        .map-responsive {
+            overflow: hidden;
+            padding-top: 40%; /* 16:9 Aspect Ratio */
+            position: relative;
+            height: 0;
+            margin-bottom: 20px; /* Espaciado inferior */
+        }
+
+        .map-responsive iframe {
+            border: 0;
+            height: 80%;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+{% load static %}
+<!-- ========================= FOOTER ========================= -->
+<footer class="section-footer border-top">
+	<div class="container">
+		<section class="footer-bottom border-top row">
+			<div class="col-md-2">
+				<p class="text-muted"> &copy; La Picá de la Chabelita </p>
+			</div>
+			<div class="col-md-8 text-md-center">
+				<span  class="px-2">lapicachabelita@gmail.com</span>
+				<span  class="px-2">+569 54319275</span>
+				<span  class="px-2">Av. Circunvalación 2058, Santiago</span>
+			</div>
+			<div class="col-md-2 text-md-right text-muted">
+				<img src="{% static 'images/pagos.png' %}" style="width: 130px; height: auto;">
+			</div>
+		</section>
+	</div><!-- //container -->
+</footer>
+<!-- ========================= FOOTER END // ========================= -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+	$(document).ready(function(){
+					$('.thumb a').click(function(e){
+							e.preventDefault();
+							$('.mainImage img').attr('src', $(this).attr('href'));
+					});
+			});
+
+</script>
+</body>
+</html>
