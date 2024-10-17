@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="section-content padding-y bg">
+    <div class="container">
+
+    <!-- ============================ COMPONENT 1 ================================= -->
+
+    <div class="row">
+        <aside class="col-lg-6">
+    <div class="card">
+
+      <div class="card-body">
+          <h4 class="card-title mb-4">Dirección de envío</h4>
+          <form action="{% url 'place_order' %}" method="post">
+              {% csrf_token %}
+              <div class="form-row">
+                  <div class="col form-group">
+                      <label for="">Nombre(s)</label>
+                      <input type="text" name="nombre" class="form-control">
+                  </div>
+
+                  <div class="col form-group">
+                      <label for="">Apellidos</label>
+                      <input type="text" name="apellido" class="form-control">
+                  </div>
+
+              </div>
+
+              <div class="form-row">
+                  <div class="col form-group">
+                      <label for="">Correo electrónico</label>
+                      <input type="email" name="email" class="form-control">
+                  </div>
+
+                  <div class="col form-group">
+                      <label for="">Teléfono</label>
+                      <input type="text" name="telefono" class="form-control">
+                  </div>
+              </div>
+
+              <div class="form-row">
+                  <div class="col form-group">
+                      <label for="">Dirección</label>
+                      <input type="text" name="direccion_1" class="form-control">
+                  </div>
+
+                  <div class="col form-group">
+                      <label for="">Detalles de la Dirección</label>
+                      <input type="text" name="direccion_2" class="form-control">
+                  </div>
+
+              </div>
+
+              <div class="form-row">
+
+                <div class="col form-group">
+                    <label for="">País</label>
+                    <input type="text" name="pais" class="form-control">
+                </div>
+
+                <div class="col form-group">
+                    <label for="">Ciudad</label>
+                    <input type="text" name="ciudad" class="form-control">
+                </div>
+
+                <div class="col form-group">
+                    <label for="">Region</label>
+                    <input type="text" name="region" class="form-control">
+                </div>
+
+              </div>
+
+              <div class="form-row">
+                <label for="">Descripción de la orden</label>
+                <textarea name="pedido_nota" rows="2" class="form-control"></textarea>
+              </div>
+      </div>
+
+
+
+
+    </div> <!-- card.// -->
+
+        </aside> <!-- col.// -->
+        <aside class="col-lg-6">
+
+            <div class="card">
+            <div class="card-body">
+              <table class="table table-borderless table-shopping-cart">
+              <thead class="text-muted">
+              <tr class="small text-uppercase">
+                <th scope="col">Producto(s)</th>
+                <th scope="col" width="120">Cantidad</th>
+                <th scope="col" width="120">Precio</th>
+
+              </tr>
+              </thead>
+              <tbody>
+
+              {% for carrito_item in carrito_items %}
+              <tr>
+                  <td>
+                      <figure class="itemside align-items-center">
+                          <div class="aside"><img src="{{ carrito_item.producto.images.url }}" class="img-sm"></div>
+                          <figcaption class="info">
+                              <a href="{{ carrito_item.producto.get_url }}" class="title text-dark">{{ carrito_item.producto.producto_nombre }}</a>
+
+                              <p class="text-muted small">
+                                {% if carrito_item.variacion.all %}
+                                  {% for item in carrito_item.variacion.all %}
+                                    {{ item.variacion_categoria | capfirst }} : {{ item.variation_value | capfirst }} <br>
+                                  {% endfor %}
+                                {% endif %}
+                              </p>
+                          </figcaption>
+                      </figure>
+                  </td>
+                  <td>
+
+                    <label for="">{{ carrito_item.cantidad }}</label>
+
+                  </td>
+                  <td>
+                      <div class="price-wrap">
+                          <var class="price">${{ carrito_item.sub_total }}</var>
+                          <small class="text-muted"> ${{ carrito_item.producto.precio }} cada uno </small>
+                      </div> <!-- price-wrap .// -->
+                  </td>
+
+              </tr>
+              {% endfor %}
+
+              </tbody>
+              </table>
+
+                <button type="submit" name="submit" class="btn btn-primary btn-block"> Pedir </button>
+                <a href="{% url 'tienda' %}" class="btn btn-light btn-block">Continuar comprando</a>
+                </form>
+            </div> <!-- card-body.// -->
+            </div> <!-- card.// -->
+
+    </aside> <!-- col.// -->
+
+
+    </div> <!-- row.// -->
+    <!-- ============================ COMPONENT 1 END .// ================================= -->
+    </div> <!-- container .//  -->
+    </section>
+    <!-- ========================= SECTION CONTENT END// ========================= -->
+{% endblock %}
