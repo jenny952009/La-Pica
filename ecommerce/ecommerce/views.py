@@ -16,22 +16,3 @@ def home(request):
     }
 
     return render(request, 'home.html', context)
-
-"""
-from django.shortcuts import render
-from tienda.models import Producto, RevisarRating
-
-def home(request):
-    productos = Producto.objects.all().filter(is_available=True).order_by('created_date')
-
-    
-    for producto in productos:
-        reviews = ting.objects.filter(producto_id=producto.id, status=True)
-
-    context = {
-        'productos': productos,
-        'reviews': reviews, 
-    }
-
-    return render(request, 'home.html', context)
-"""

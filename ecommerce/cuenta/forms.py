@@ -59,16 +59,5 @@ class UsuarioPerfilForm(forms.ModelForm):
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
 
-"""
-class LoginForm(forms.Form):
-    email = forms.EmailField(label='Email', widget=forms.EmailInput(attrs={
-        'placeholder': 'Ingrese su email',
-        'class': 'form-control'
-    }))
-    password = forms.CharField(label='Contraseña', widget=forms.PasswordInput(attrs={
-        'placeholder': 'Ingrese su contraseña',
-        'class': 'form-control'
-    }))
 
-"""
 

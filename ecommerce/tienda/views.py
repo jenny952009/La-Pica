@@ -10,7 +10,6 @@ from django.contrib import messages
 from pedido.models import PedidoProducto
 
 #from django.shortcuts import render
-#from .models import Producto  # Asegúrate de importar tu modelo Producto
 
 
 # Create your views here.
@@ -72,21 +71,6 @@ def producto_detalle(request, category_slug, product_slug):
 
     return render(request, 'tienda/producto_detalle.html', context)
 
-"""
-def search(request):
-    if 'keyword' in request.GET:
-        keyword = request.GET['keyword']
-        if keyword:
-            productos = Producto.objects.order_by('-created_date').filter(Q(descripcion__icontains=keyword) | Q(producto_nombre__icontains=keyword))
-            producto_count = productos.count()
-    context = {
-        'productos': productos,
-        'producto_count': producto_count,
-    }
-
-    return render(request, 'tienda/tienda.html', context)
-
-    """
 def search(request):
     productos = []  # Inicializa la lista vacía
     producto_count = 0  # Inicializa el conteo
@@ -113,7 +97,7 @@ def submit_review(request, producto_id):
     url = request.META.get('HTTP_REFERER')
     if request.method == 'POST':
         try:
-            reviews = RevisarRating.objects.get(usuario__id=request.user.id, producto__id=producto_id)
+            reviews = RevisarRating.objects.get(user__id=request.user.id, producto__id=producto_id)
             form = RevisarForm(request.POST, instance=reviews)
             form.save()
             messages.success(request, 'Muchas gracias!, tu comentario ha sido actualizado.')

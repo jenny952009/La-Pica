@@ -146,9 +146,9 @@
         paypal.Buttons({
 
             createOrder: function(data, actions){
-              return actions.pedido.create({
+              return actions.order.create({
                   purchase_units: [{
-                      monto: {
+                      amount: {
                         value: monto
                       }
                   }]
@@ -157,7 +157,7 @@
 
             // Finalize the transaction on the server after payer approval
             onApprove: function(data, actions) {
-                return actions.pedido.capture().then(function(orderData) {
+                return actions.order.capture().then(function(orderData) {
                     console.log(orderData);
                     sendData();
 

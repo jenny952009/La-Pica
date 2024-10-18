@@ -89,3 +89,8 @@ class ProductoGaleria(models.Model):
 
     def __str__(self):
         return self.producto.producto_nombre
+#Se agregra staticmethod
+    @staticmethod
+    def get_first_image(producto):
+        galeria = ProductoGaleria.objects.filter(producto=producto).first()
+        return galeria.image.url if galeria else 'path/to/default/image.png'
