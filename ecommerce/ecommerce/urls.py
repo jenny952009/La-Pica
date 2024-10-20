@@ -27,4 +27,6 @@ urlpatterns = [
     path('carro/', include('carrito.urls')),
     path('cuenta/', include('cuenta.urls')),
     path('pedido/', include('pedido.urls')),
+    path('', include('reservaciones.urls')),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section-conten padding-y" style="min-height:84vh">
+    <div class="card mx-auto" style="max-width: 600px; margin-top: 50px;">
+        {% include 'includes/alerts.html' %}
+
+        <div class="card-body">
+            <h4 class="card-title mb-4">Reservar mesa</h4>
+
+            <!-- Formulario para reservar mesa -->
+            <form id="reserva-form" method="POST" action="{% url 'reservacion' %}">
+                {% csrf_token %}
+                
+                <div class="form-group row">
+                    <div class="col">
+                        <label for="nombre">Ingrese su nombre</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingresar nombre usuario" required>
+                    </div>
+                    <div class="col">
+                        <label for="apellido">Ingrese su apellido</label>
+                        <input type="text" class="form-control" id="apellido" name="apellido" placeholder="Ingresar apellido usuario" required>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col">
+                        <label for="email">Ingrese su correo electrónico</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="example@gmail.com" required>
+                    </div>
+                    <div class="col">
+                        <label for="telefono">Ingrese su número telefónico</label>
+                        <input type="tel" class="form-control" id="telefono" name="telefono" placeholder="912345678" required>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col">
+                        <label for="personas">Cantidad de personas</label>
+                        <input type="number" class="form-control" id="personas" name="personas" placeholder="Número de personas" min="1" required>
+                    </div>
+                    <div class="col">
+                        <label for="numero_mesa">Número de Mesa</label>
+                        <input type="number" class="form-control" id="numero_mesa" name="numero_mesa" placeholder="10" required>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col">
+                        <label for="hora_comienzo">Hora de comienzo</label>
+                        <select class="form-control" id="hora_comienzo" name="hora_comienzo">
+                            <option value="12:00">Entre las 12:00 y 13:00</option>
+                            <option value="13:00">Entre las 13:00 y 14:00</option>
+                            <option value="14:00">Entre las 14:00 y 15:00</option>
+                            <option value="15:00">Entre las 15:00 y 16:00</option>
+                            <option value="16:00">Entre las 16:00 y 17:00</option>
+                            <option value="17:00">Entre las 17:00 y 18:00</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="confirmar" name="confirmar" required>
+                    <label class="form-check-label" for="confirmar">Confirmar reserva</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Reservar mesa</button>
+            </form>
+            <!-- Fin del formulario -->
+
+        </div>
+    </div>
+
+    <br><br>
+
+    <!-- Tarjeta para ingresar el código de reserva y descargar PDF -->
+    <div class="card mx-auto" style="max-width: 600px; margin-top: 20px;">
+        <div class="card-body">
+            <h4 class="card-title mb-4">Descargar Boleta</h4>
+
+            <!-- Formulario para ingresar el código de reserva -->
+            <form id="codigoReservaForm" method="POST" action="{% url 'descargar_boleta' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="codigo_reserva">Ingrese su código de reserva</label>
+                    <input type="text" class="form-control" id="codigo_reserva" name="codigo_reserva" placeholder="Código de reserva" required>
+                </div>
+                <button type="submit" class="btn btn-success btn-block">Sacar Boleta</button>
+            </form>
+            <div id="mensaje" style="color:red;"></div>
+        </div>
+    </div>
+
+</section>
+
+<script>
+    // AJAX para procesar la reserva
+    $(document).ready(function() {
+        $('#reserva-form').on('submit', function(event) {
+            event.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'reservacion' %}",
+                data: $(this).serialize(),
+                success: function(response) {
+                    alert('¡Tu reserva ha sido realizada exitosamente! Código de reserva: ' + response.codigo_reserva);
+                    $('#reserva-form')[0].reset();
+                },
+                error: function(xhr, status, error) {
+                    alert('Error: ' + xhr.responseJSON.error);
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}

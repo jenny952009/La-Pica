@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'tienda',
     'carrito',
     'pedido',
+    'reservaciones',
     #'cuenta.apps.CuentaConfig',  # Registro de la clase de configuración
     'django_extensions',
 ]
