@@ -1,0 +1,30 @@
+ {% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5 mb-5 d-flex justify-content-center"> <!-- Ajusta los márgenes y alinea el contenido -->
+  <div class="subscripcion-box p-4 rounded shadow-lg text-center"> <!-- Cuadro alrededor de la suscripción -->
+{% comment %} <div class="container text-center mt-5"> {% endcomment %}
+    <h2>Suscripción a Ofertas</h2>
+
+  <!-- Mostrar el mensaje de éxito si existe -->
+    {% if success %} 
+      <p style="color: green;">Suscripción exitosa. Te hemos enviado un correo de confirmación.</p>
+    {% endif %}
+
+  <!-- Formulario de suscripción -->
+    <form method="POST">
+     {% csrf_token %}
+     {{ form.as_p }}
+      <button type="submit" class="btn btn-success mx-2">Aceptar</button> <!-- Botón verde -->
+      <a href="/" class="btn btn-primary mx-2">Volver</a>
+    
+
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+
+
+
