@@ -12,9 +12,11 @@ class Categoria(models.Model):
         verbose_name = 'Categoria'
         verbose_name_plural = 'Categorias'
 
+    # Método que genera la URL para acceder a los productos de esta categoría.
     def get_url(self):
         return reverse('productos_por_categoria', args=[self.slug])
 
+    # Representación en cadena del objeto
     def __str__(self):
         
-        return self.categoria_nombre
+        return self.categoria_nombre # Retorna el nombre de la categoría 
