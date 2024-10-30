@@ -13,12 +13,15 @@ from django.core.mail import EmailMessage
 from carrito.views import _carrito_id
 from carrito.models import Carrito, CarritoItem
 import requests
+# Esta función maneja el registro de nuevos usuarios y envía un email de verificación.
 
 def registrar(request):
     form = RegistrarForm()
     if request.method == 'POST':
         form = RegistrarForm(request.POST)
         if form.is_valid():
+                        # Creación de la cuenta de usuario y perfil.
+
             nombre = form.cleaned_data['nombre']
             apellido = form.cleaned_data['apellido']
             telefono = form.cleaned_data['telefono']
@@ -43,7 +46,8 @@ def registrar(request):
                 'token': default_token_generator.make_token(user),
             })
             send_email = EmailMessage(mail_subject, body, to=[email])
-            send_email.send()
+            send_email.send()            # Envío de correo de verificación.
+
 
             #messages.success(request, 'Te has registrado exitosamente. Verifica tu correo para activar tu cuenta.')
             return redirect('/cuenta/login/?command=verification&email=' + email)
@@ -62,7 +66,8 @@ def login(request):
         user = auth.authenticate(email=email, password=password)
 
         if user is not None:
-            try:
+            try:                # Comprobación y actualización del carrito en caso de items previos.
+
                 carro = Carrito.objects.get(carrito_id=_carrito_id(request))
                 is_carrito_item_exist = CarritoItem.objects.filter(carro=carro).exists()
                 
@@ -121,13 +126,15 @@ def login(request):
 
     return render(request, 'cuenta/login.html')    
                 
-                
+# Esta función permite cerrar sesión en el sistema y redirige al login.
+               
 @login_required(login_url='login')
 def logout(request):
     auth.logout(request)
     messages.success(request, 'Has salido de sesión')
     return redirect('login')
 
+# Función para activar la cuenta del usuario mediante un enlace de verificación en el correo.
 def activate(request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
@@ -143,7 +150,8 @@ def activate(request, uidb64, token):
     else:
         messages.error(request, 'No se pudo completar la activación de la cuenta')
         return redirect('registrar')
-
+    
+# Muestra un panel de usuario con sus pedidos y detalles de perfil.
 @login_required(login_url='login')
 def dashboard(request):
         
@@ -159,6 +167,7 @@ def dashboard(request):
 
     return render(request, 'cuenta/dashboard.html', context)
 
+# Esta función gestiona el proceso de recuperación de contraseña a través de email.
 def olvidarPassword(request):
     if request.method == 'POST':
         email = request.POST['email']
@@ -185,6 +194,7 @@ def olvidarPassword(request):
 
     return render(request, 'cuenta/olvidarPassword.html')
 
+# Esta función valida el enlace de recuperación de contraseña y permite reestablecerla.
 def resetpassword_validate(request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
@@ -200,6 +210,7 @@ def resetpassword_validate(request, uidb64, token):
         messages.error(request, 'El link ha caducado')
         return redirect('login')
 
+# Permite al usuario reestablecer su contraseña si el token es válido.
 def borrarPassword(request):
     if request.method == 'POST':
         password = request.POST['password']
@@ -213,12 +224,13 @@ def borrarPassword(request):
             messages.success(request, 'La contraseña se actualizó correctamente')
             return redirect('login')
         else:
-            messages.error(request, 'La contraseña de confirmación no concuerda')
+            messages.error(request, 'La contraseña de confirmación no es igual')
             return redirect('borrarPassword')
     else:    
         
          return render(request, 'cuenta/borrarPassword.html')
 
+# Muestra una lista de pedidos realizados por el usuario.
 def mis_pedidos(request):
     pedidos = Pedido.objects.filter(user=request.user, is_ordered=True).order_by('-created_at')
     context = {
@@ -227,6 +239,7 @@ def mis_pedidos(request):
 
     return render(request, 'cuenta/mis_pedidos.html', context)
 
+# Permite al usuario editar su perfil y guardar los cambios.
 @login_required(login_url='login')
 def editar_perfil(request):
     userprofile = get_object_or_404(UsuarioPerfil, user=request.user)
@@ -250,7 +263,7 @@ def editar_perfil(request):
 
     return render(request, 'cuenta/editar_perfil.html', context)
 
-@login_required(login_url='login')
+@login_required(login_url='login')# Esta función permite al usuario cambiar su contraseña tras verificar la actual.
 def cambio_password(request):
     if request.method == 'POST':
         current_password = request.POST['current_password']
