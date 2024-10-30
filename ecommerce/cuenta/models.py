@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
+#Gestionar cómo se crean tanto usuarios regulares como superusuario
 class MiCuentaManager(BaseUserManager):
     def create_user(self, nombre, apellido, username, email, password=None):
         if not email:
@@ -36,7 +37,7 @@ class MiCuentaManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-
+#Se definen los campos básicos para la cuenta
 class Cuenta(AbstractBaseUser):
     nombre = models.CharField(max_length=30)
     apellido = models.CharField(max_length=55)
@@ -52,7 +53,7 @@ class Cuenta(AbstractBaseUser):
     is_active = models.BooleanField(default=False)
     is_superadmin = models.BooleanField(default=False)
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'email' #usuarios inician sesión usando su correo electrónico
     REQUIRED_FIELDS = ['username', 'nombre', 'apellido']
 
     objects = MiCuentaManager()
@@ -69,7 +70,7 @@ class Cuenta(AbstractBaseUser):
     def has_module_perms(self, add_label):
         return True
 
-
+#Información de la Cuenta y permite agregar datos de perfil adicionales
 class UsuarioPerfil(models.Model):
     user = models.OneToOneField(Cuenta, on_delete=models.CASCADE)  # Se elimina el perfil al eliminar el usuario
     direccion_1 = models.CharField(blank=True, max_length=100)

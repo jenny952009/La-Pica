@@ -1,7 +1,8 @@
 {% load static %}
 
-<header class="section-header">
-<nav class="navbar p-md-0 navbar-expand-sm navbar-light border-bottom">
+<header class="section-header"> 
+  {% comment %} barra de navegación principal expandible {% endcomment %}
+<nav class="navbar p-md-0 navbar-expand-sm navbar-light border-bottom">   
 <div class="container">
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTop4" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -33,7 +34,7 @@
       style="min-width: 50px; min-height: 90px;">
     </a> <!-- brand-wrap.// -->
   </div>
-  
+  {% comment %} Este botón abre un menú desplegable que muestra todas las categorías disponibles {% endcomment %}
   <div class="col-lg col-sm col-md col-6 flex-grow-0">
     <div class="category-wrap dropdown d-inline-block float-right">
       <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
@@ -46,11 +47,11 @@
         {% endfor %}
       </div>
     </div>  <!-- category-wrap.// -->
-  </div> <!-- col.// -->
+  </div> <!-- Botones de navegación adicionales que redirigen a las secciones de "Menús" y "Reservación"./ -->
   <a href="{% url 'tienda' %}" class="btn btn-outline-primary">Menús</a>
   <a href="{% url 'reservacion' %}" class="btn btn-outline-primary">Reservación</a>
   <div class="col-lg  col-md-6 col-sm-12 col">
-
+{% comment %} Contiene un campo de entrada y un botón para la búsqueda de productos en el sitio, {% endcomment %}
     <form action="{% url 'search' %}" class="search">
       <div class="input-group w-100">
           <input type="text" class="form-control" style="width:60%;" placeholder="Buscar productos" name="keyword">
@@ -65,7 +66,7 @@
   </div> <!-- col.// -->
   <div class="col-lg-3 col-sm-6 col-8 order-2 order-lg-3">
         <div class="d-flex justify-content-end mb-3 mb-lg-0">
-
+{% comment %} Verifica si el usuario ha iniciado sesión {% endcomment %}
           {% if user.id is None %}
           <div class="widget-header">
             <small class="title text-muted">Bienvenido a La Picá</small>
@@ -87,7 +88,7 @@
 
           {% endif%}
 
-
+{% comment %} Enlace al carrito de compras, que muestra el icono y la cantidad de artículos  {% endcomment %}
           <a href="{% url 'carro' %}" class="widget-header pl-3 ml-3">
             <div class="icon icon-sm rounded-circle border"><i class="fa fa-shopping-cart"></i></div>
             <span class="badge badge-pill badge-danger notify">{{ carrito_count }}</span>
