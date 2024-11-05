@@ -5,7 +5,7 @@
         <a class="list-group-item {% if '/mis_pedidos/' in request.path %} active {% endif %}" href="{% url 'mis_pedidos' %}"> Mis pedidos de compra </a>
         <a class="list-group-item {% if '/editar_perfil/' in request.path %} active {% endif %}" href="{% url 'editar_perfil' %}"> Editar perfil </a>
         <a class="list-group-item {% if '/cambio_password/' in request.path %} active {% endif %}" href="{% url 'cambio_password' %}"> Cambiar contraseña </a>
-        <a class="list-group-item" href=""> Ayuda y contacto </a>
+        <a class="list-group-item {% if '/ayuda_y_contacto/' in request.path %} active {% endif %}" href="{% url 'ayuda_y_contacto' %}"> Ayuda y contacto </a>
     </ul>
     <br>
     <a class="btn btn-light btn-block" href="{% url 'logout' %}"> <i class="fa fa-power-off"></i> <span class="text">Cerrar sesión</span> </a>

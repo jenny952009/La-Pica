@@ -290,4 +290,8 @@ def cambio_password(request):
     return render(request, 'cuenta/cambio_password.html')
  
             
-         
+#-----------------------------ayuda_y_contacto.html-------------------------------------------   
+
+@login_required(login_url='login')
+def ayuda_y_contacto(request):
+    return render(request, 'cuenta/ayuda_y_contacto.html')    

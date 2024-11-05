@@ -22,6 +22,7 @@ class Reserva(models.Model):
         """
 
 from django.db import models
+from django.utils import timezone
 import uuid
 
 class Reserva(models.Model):
@@ -32,10 +33,10 @@ class Reserva(models.Model):
     email = models.EmailField()
     telefono = models.CharField(max_length=15)
     numero_mesa = models.IntegerField()
-    # Cambié el comportamiento de la fecha de reserva
     fecha_reserva = models.DateTimeField(auto_now_add=True)  # Se establece al crear el objeto
     hora_comienzo = models.TimeField()
     personas = models.IntegerField()
+    dia_reserva = models.DateField(default=timezone.now)
 
     def __str__(self):
         return f"{self.nombre} {self.apellido} - Mesa {self.numero_mesa}"
