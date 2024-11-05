@@ -12,7 +12,9 @@ urlpatterns = [
     path('borrarPassword/', views.borrarPassword, name='borrarPassword'),
     path('activate/<uidb64>/<token>/', views.activate, name='activate'),
     path('mis_pedidos/', views.mis_pedidos, name='mis_pedidos'),
-    path('editar-perfil/', views.editar_perfil, name='editar_perfil'),
+    path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
     path('cambio_password/', views.cambio_password, name='cambio_password'),
+    path('ayuda_y_contacto/', views.ayuda_y_contacto, name='ayuda_y_contacto'),
+
 ]
 

@@ -48,33 +48,11 @@
 
               <p>{{ single_product.descripcion }}</p>
 
-
-              <hr>
-              <div class="row">
-                <div class="item-option-select">
-                  <h6>Escoge el sabor</h6>
-                  <select class="form-control" name="sabor" required>
-                    <option value="" disabled selected>Seleccionar</option>
-                      {% for i in single_product.variation_set.sabores %}
-                      <option value="{{ i.variation_value | lower }}">{{ i.variation_value | capfirst }}</option>
-                      {% endfor %}
-                  </select>
-                </div>
-              </div> <!-- row.// -->
-              <div class="row">
-                <div class="item-option-select">
-
-                  <h6>Escoge el tamaño</h6>
-                  <select class="form-control" name="tamaño" required>
-                    <option value="" disabled selected>Seleccionar</option>
-                      {% for i in single_product.variation_set.tamaños %}
-                      <option value="{{ i.variation_value | lower }}">{{ i.variation_value | capfirst }}</option>
-                      {% endfor %}
-                  </select>
-
-                </div>
-              </div> <!-- row.// -->
-              <hr>
+            <!------------------------------------------------------------------------------------------>
+            <hr>
+                          
+            <hr>
+            <!------------------------------------------------------------------------------------------>
 
               {% if single_product.stock <= 0 %}
               <h5>Lo lamentamos, es un producto sin stock</h5>
