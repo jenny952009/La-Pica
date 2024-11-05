@@ -2,6 +2,18 @@
 
 {% block content %}
 <section class="section-conten padding-y" style="min-height:84vh">
+    <!-- Notificación de reserva exitosa -->
+    {% if request.GET.command == 'reservation_success' %}
+      <div class="container mx_auto alert alert-info" role="alert" style="max-width: 600px; margin-top: 20px;">
+        ¡Tu reserva ha sido realizada exitosamente! Te hemos enviado un correo con tu código de reserva a {{ request.GET.email }}.
+      </div>
+    {% endif %}
+
+    <!-- Notificación de error de reserva -->
+    <div class="container mx_auto" id="mensaje-error" style="max-width: 600px; margin-top: 20px; display: none;">
+      <div class="alert alert-danger" role="alert" id="error-message"></div>
+    </div>
+
     <div class="card mx-auto" style="max-width: 600px; margin-top: 50px;">
         {% include 'includes/alerts.html' %}
 
@@ -11,7 +23,7 @@
             <!-- Formulario para reservar mesa -->
             <form id="reserva-form" method="POST" action="{% url 'reservacion' %}">
                 {% csrf_token %}
-                
+
                 <div class="form-group row">
                     <div class="col">
                         <label for="nombre">Ingrese su nombre</label>
@@ -39,11 +51,39 @@
                         <label for="personas">Cantidad de personas</label>
                         <input type="number" class="form-control" id="personas" name="personas" placeholder="Número de personas" min="1" required>
                     </div>
-                    <div class="col">
-                        <label for="numero_mesa">Número de Mesa</label>
-                        <input type="number" class="form-control" id="numero_mesa" name="numero_mesa" placeholder="10" required>
+                    <div class="form-group row">
+                        <div class="col">
+                            <label for="numero_mesa">Número de Mesa</label>
+                            <input type="number" class="form-control" id="numero_mesa" name="numero_mesa" placeholder="10" min="1" required>
+                        </div>
                     </div>
                 </div>
+
+                <div class="form-group row">
+                    <div class="col">
+                        <label for="dia_reserva">Seleccione el día de la reserva</label>
+                        <select class="form-control" id="dia_reserva" name="dia_reserva" required></select>
+                    </div>
+                </div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const selectDiaReserva = document.getElementById('dia_reserva');
+                        const today = new Date();
+
+                        // Generar solo los próximos cinco días
+                        for (let i = 0; i < 5; i++) {
+                            const option = document.createElement('option');
+                            const futureDate = new Date(today);
+                            futureDate.setDate(today.getDate() + i);
+
+                            // Formato de fecha "YYYY-MM-DD"
+                            option.value = futureDate.toISOString().split('T')[0];
+                            option.textContent = option.value;
+                            selectDiaReserva.appendChild(option);
+                        }
+                    });
+                </script>
 
                 <div class="form-group row">
                     <div class="col">
@@ -76,42 +116,46 @@
     <!-- Tarjeta para ingresar el código de reserva y descargar PDF -->
     <div class="card mx-auto" style="max-width: 600px; margin-top: 20px;">
         <div class="card-body">
-            <h4 class="card-title mb-4">Descargar Boleta</h4>
-
-            <!-- Formulario para ingresar el código de reserva -->
-            <form id="codigoReservaForm" method="POST" action="{% url 'descargar_boleta' %}">
+            <h4 class="card-title mb-4">Descargar Ticket de Reserva</h4>
+            <form id="ticket-form" method="POST" action="{% url 'Descargar_Ticket' %}">
                 {% csrf_token %}
                 <div class="form-group">
-                    <label for="codigo_reserva">Ingrese su código de reserva</label>
-                    <input type="text" class="form-control" id="codigo_reserva" name="codigo_reserva" placeholder="Código de reserva" required>
+                    <label for="codigo_reserva">Código de Reserva</label>
+                    <input type="text" class="form-control" id="codigo_reserva" name="codigo_reserva" placeholder="Ingrese su código de reserva" required>
                 </div>
-                <button type="submit" class="btn btn-success btn-block">Sacar Boleta</button>
+                <button type="submit" class="btn btn-success btn-block">Descargar Ticket</button>
             </form>
-            <div id="mensaje" style="color:red;"></div>
         </div>
     </div>
 
 </section>
 
 <script>
-    // AJAX para procesar la reserva
-    $(document).ready(function() {
-        $('#reserva-form').on('submit', function(event) {
-            event.preventDefault();
-            $.ajax({
-                type: 'POST',
-                url: "{% url 'reservacion' %}",
-                data: $(this).serialize(),
-                success: function(response) {
-                    alert('¡Tu reserva ha sido realizada exitosamente! Código de reserva: ' + response.codigo_reserva);
-                    $('#reserva-form')[0].reset();
-                },
-                error: function(xhr, status, error) {
-                    alert('Error: ' + xhr.responseJSON.error);
-                }
-            });
-        });
-    });
-</script>
+    // Manejo de respuestas del formulario
+    document.getElementById('reserva-form').onsubmit = async function (event) {
+        event.preventDefault();  // Prevenir el envío normal del formulario
 
+        const formData = new FormData(this);
+        const response = await fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Si la reserva fue exitosa
+            window.location.href = "?command=reservation_success&email=" + data.email;
+        } else {
+            // Mostrar mensaje de error
+            const errorMessageDiv = document.getElementById('mensaje-error');
+            const errorMessageElement = document.getElementById('error-message');
+            errorMessageElement.textContent = data.error;
+            errorMessageDiv.style.display = 'block';
+        }
+    };
+</script>
 {% endblock %}

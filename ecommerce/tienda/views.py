@@ -93,25 +93,26 @@ def search(request):
     
     
     
+#-----------------------------comentarios-------------------------------------------    
+    
 def submit_review(request, producto_id):
     url = request.META.get('HTTP_REFERER')
     if request.method == 'POST':
-        try:
-            reviews = RevisarRating.objects.get(user__id=request.user.id, producto__id=producto_id)
-            form = RevisarForm(request.POST, instance=reviews)
-            form.save()
-            messages.success(request, 'Muchas gracias!, tu comentario ha sido actualizado.')
-            return redirect(url)
-        except RevisarRating.DoesNotExist:
-            form = RevisarForm(request.POST)
-            if form.is_valid():
-                data = RevisarRating()
-                data.subject = form.cleaned_data['subject']
-                data.rating = form.cleaned_data['rating']
-                data.review = form.cleaned_data['review']
-                data.ip = request.META.get('REMOTE_ADDR')
-                data.producto_id = producto_id
-                data.user_id = request.user.id
-                data.save()
-                messages.success(request, 'Tu comentario ha sido publicado ¡Muchas gracias! .')
-                return redirect(url)
+        form = RevisarForm(request.POST)
+        if form.is_valid():
+            data = RevisarRating()
+            data.subject = form.cleaned_data['subject']
+            data.rating = form.cleaned_data['rating']
+            data.review = form.cleaned_data['review']
+            data.ip = request.META.get('REMOTE_ADDR')
+            data.producto_id = producto_id
+            data.user_id = request.user.id
+            data.save()
+            messages.success(request, 'Tu comentario ha sido publicado. ¡Muchas gracias!')
+        else:
+            messages.error(request, 'Por favor, Rellene todos los campos del formulario antes de enviar.')
+
+        return redirect(url)
+
+
+    return redirect(url) 
