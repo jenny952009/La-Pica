@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
+import pymysql
+pymysql.install_as_MySQLdb()
 #from decouple import config
 #pip install python-decouple
 
@@ -114,9 +116,7 @@ DATABASES = {
         'PASSWORD': '',
         'HOST': 'localhost',  # o la dirección del servidor MySQL
         'PORT': '3306',       # El puerto predeterminado de MySQL
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
+        # No incluir 'OPTIONS' aquí
     }
 }
 
