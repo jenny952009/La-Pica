@@ -40,6 +40,25 @@
   box-sizing: border-box;
 }
 
+#pam
+.subscription-box {
+  background-color: #f8f9fa; /* Color de fondo claro */
+  border: 2px solid #dee2e6; /* Borde gris claro */
+  padding: 20px; /* Espacio interno */
+  border-radius: 10px; /* Bordes redondeados */
+  max-width: 500px; /* Ancho máximo para el cuadro */
+  width: 100%;
+}
+
+.container {
+  margin-top: 100px; /* Separación del header */
+  margin-bottom: 100px; /* Separación del footer */
+}
+
+
+
+
+
 html {
   font-family: sans-serif;
   line-height: 1.15;

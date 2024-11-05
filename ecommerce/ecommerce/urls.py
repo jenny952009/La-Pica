@@ -28,5 +28,6 @@ urlpatterns = [
     path('cuenta/', include('cuenta.urls')),
     path('pedido/', include('pedido.urls')),
     path('', include('reservaciones.urls')),
+    path('suscripcion/', include('suscripcion.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'carrito',
     'pedido',
     'reservaciones',
+    'suscripcion',
     #'cuenta.apps.CuentaConfig',  # Registro de la clase de configuración
     'django_extensions',
 ]
@@ -96,15 +97,7 @@ AUTH_USER_MODEL = 'cuenta.Cuenta'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-"""
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        }
-}
 
-"""
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
