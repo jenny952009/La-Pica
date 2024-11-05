@@ -12,7 +12,7 @@ urlpatterns = [
     path('borrarPassword/', views.borrarPassword, name='borrarPassword'), # Ruta para permitir a los usuarios borrar su contraseña
     path('activate/<uidb64>/<token>/', views.activate, name='activate'), # Ruta para activar la cuenta de un usuario utilizando un token
     path('mis_pedidos/', views.mis_pedidos, name='mis_pedidos'),  # Ruta para mostrar los pedidos realizados por el usuario
-    path('editar-perfil/', views.editar_perfil, name='editar_perfil'),# Ruta para que el usuario edite su perfil
+    path('editar_perfil/', views.editar_perfil, name='editar_perfil'),# Ruta para que el usuario edite su perfil
     path('cambio_password/', views.cambio_password, name='cambio_password'),  # Ruta para que el usuario cambie su contraseña
 ]
 
