@@ -1,14 +1,14 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Producto, RevisarRating, ProductoGaleria
+from .models import Producto, ReseñaRating, ProductoGaleria
 from categoria.models import Categoria
 from carrito.models import CarritoItem
 from carrito.views import _carrito_id
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
-from .forms import RevisarForm
+from .forms import ReseñaForm
 from django.contrib import messages
 from pedido.models import PedidoProducto
-
+from django.urls import reverse
 #from django.shortcuts import render
 
 
@@ -56,7 +56,7 @@ def producto_detalle(request, category_slug, product_slug):
         pedidoproducto = None
 
 
-    reviews = RevisarRating.objects.filter(producto__id=single_product.id, status=True)
+    reviews = ReseñaRating.objects.filter(producto__id=single_product.id, status=True)
 
     producto_galeria = ProductoGaleria.objects.filter(producto_id=single_product.id)
 
@@ -71,6 +71,7 @@ def producto_detalle(request, category_slug, product_slug):
 
     return render(request, 'tienda/producto_detalle.html', context)
 
+# Vista de búsqueda de productos
 def search(request):
     productos = []  # Inicializa la lista vacía
     producto_count = 0  # Inicializa el conteo
@@ -94,16 +95,20 @@ def search(request):
     
     
 #-----------------------------comentarios-------------------------------------------    
-    
-def submit_review(request, producto_id):
-    url = request.META.get('HTTP_REFERER')
+# Vista para enviar una reseña  
+def agregar_reseña(request, producto_id):
+    url = request.META.get('HTTP_REFERER')  # Guarda la URL previa para redirigir después del procesamiento de la reseña
+    # Verifica si la solicitud es POST (es decir, si el formulario fue enviado)
     if request.method == 'POST':
-        form = RevisarForm(request.POST)
+# Verifica que el usuario haya comprado el producto antes de permitirle enviar una reseña
+       # producto_comprado = PedidoProducto.objects.filter(usuario=request.user, producto_id=producto_id).exists()
+
+        form = ReseñaForm(request.POST)
         if form.is_valid():
-            data = RevisarRating()
-            data.subject = form.cleaned_data['subject']
+            data = ReseñaRating()
+            data.titulo = form.cleaned_data['titulo']
             data.rating = form.cleaned_data['rating']
-            data.review = form.cleaned_data['review']
+            data.reseña= form.cleaned_data['reseña']
             data.ip = request.META.get('REMOTE_ADDR')
             data.producto_id = producto_id
             data.user_id = request.user.id
@@ -112,7 +117,8 @@ def submit_review(request, producto_id):
         else:
             messages.error(request, 'Por favor, Rellene todos los campos del formulario antes de enviar.')
 
-        return redirect(url)
+        # Redirige de nuevo a la vista `agregar_reseña` pasando el `producto_id`
+        return redirect(reverse('agregar_reseña', args=[producto_id]))
 
 
-    return redirect(url) 
+    return redirect('home') 

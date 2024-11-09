@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Producto, Variacion, RevisarRating, ProductoGaleria
+from .models import Producto, ReseñaRating, ProductoGaleria        #Variacion,
 import admin_thumbnails # type: ignore      #revisarrrrrrrrrrr
 
 
@@ -14,14 +14,14 @@ class ProductoAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('producto_nombre',)}
     inlines = [ProductoGaleriaInLine]
 
-
+"""
 class VariacionAdmin(admin.ModelAdmin):
     list_display = ('producto', 'variacion_categoria', 'variation_value', 'is_active')
     list_editable = ('is_active',)
     list_filter = ('producto', 'variacion_categoria', 'variation_value', 'is_active')
-
+"""
 
 admin.site.register(Producto, ProductoAdmin)
-admin.site.register(Variacion, VariacionAdmin)
-admin.site.register(RevisarRating)
+#admin.site.register(Variacion, VariacionAdmin)
+admin.site.register(ReseñaRating)
 admin.site.register(ProductoGaleria)

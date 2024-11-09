@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from tienda.models import Producto, Variacion
+from tienda.models import Producto 
 from .models import Carrito, CarritoItem
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
@@ -22,123 +22,51 @@ def agregar_carrito(request, producto_id):
 
     if actual_usuario.is_authenticated:
         # Usuario autenticado
-        producto_variacion = []
-
-        if request.method == 'POST':
-            for item in request.POST:
-                key = item
-                value = request.POST[key]
-
-                try: # Busca la variación del producto según la categoría y el valor
-
-                    variacion = Variacion.objects.get(producto=producto, variacion_categoria__iexact=key, variation_value__iexact=value)
-                    producto_variacion.append(variacion)
-                except:
-                    pass
-                
+    
         # Verifica si el ítem del carrito ya existe
         is_cart_item_exists = CarritoItem.objects.filter(producto=producto, user=actual_usuario).exists()
-
         if is_cart_item_exists:
-            carrito_item = CarritoItem.objects.filter(producto=producto, user=actual_usuario)
-
-            ex_var_list = []
-            id = []
-            for item in carrito_item:
-                existing_variation = item.variacion.all() # Obtiene las variaciones del ítem existente
-                ex_var_list.append(list(existing_variation)) # Añade las variaciones a la lista
-                id.append(item.id)
-                
-            # Si las variaciones del producto ya están en el carrito
-            if producto_variacion in ex_var_list:
-                index = ex_var_list.index(producto_variacion)
-                item_id = id[index]
-                item = CarritoItem.objects.get(producto=producto, id=item_id)
-                item.cantidad += 1
-                item.save()
-            else:                 # Crea un nuevo ítem en el carrito si la variación no existe
-                item = CarritoItem.objects.create(producto=producto, cantidad=1, user=actual_usuario)
-                if len(producto_variacion) > 0:
-                    item.variacion.clear()
-                    item.variacion.add(*producto_variacion)
-                item.save()
-
-        else :
-             # Si el ítem no existe
-            # Crea un nuevo ítem en el carrito
+            carrito_item = CarritoItem.objects.filter(producto=producto, user=actual_usuario).first()
+            carrito_item.cantidad += 1
+            carrito_item.save()
+        else:
+            # Si el ítem no existe, crea un nuevo ítem en el carrito
             carrito_item = CarritoItem.objects.create(
-                producto = producto,
-                cantidad = 1,
-                user = actual_usuario,
+                producto=producto,
+                cantidad=1,
+                user=actual_usuario,
             )
-            if len(producto_variacion) > 0:
-                carrito_item.variacion.clear()
-                carrito_item.variacion.add(*producto_variacion)
             carrito_item.save()
 
         return redirect('carro')
 
     else:
-        producto_variacion = []
-
-        if request.method == 'POST':
-            for item in request.POST:
-                key = item
-                value = request.POST[key]
-
-                try:
-                    variacion = Variacion.objects.get(producto=producto, variacion_categoria__iexact=key, variation_value__iexact=value)
-                    producto_variacion.append(variacion)
-                except:
-                    pass
-
-        try:        # Intenta obtener el carrito existente o crear uno nuevo
+        # Usuario no autenticado
+        try:
             carro = Carrito.objects.get(carrito_id=_carrito_id(request))
         except Carrito.DoesNotExist:
             carro = Carrito.objects.create(
-                carrito_id = _carrito_id(request)
+                carrito_id=_carrito_id(request)
             )
         carro.save()
 
         # Verifica si el ítem del carrito ya existe
         is_cart_item_exists = CarritoItem.objects.filter(producto=producto, carro=carro).exists()
         if is_cart_item_exists:
-            carrito_item = CarritoItem.objects.filter(producto=producto, carro=carro)
-
-            ex_var_list = []
-            id = []
-            for item in carrito_item:
-                existing_variation = item.variacion.all()
-                ex_var_list.append(list(existing_variation))
-                id.append(item.id)
-          
-            # Si las variaciones del producto ya están en el carrito
-            if producto_variacion in ex_var_list:
-                index = ex_var_list.index(producto_variacion)
-                item_id = id[index]
-                item = CarritoItem.objects.get(producto=producto, id=item_id)
-                item.cantidad += 1
-                item.save()
-            else:                 # Crea un nuevo ítem en el carrito si la variación no existe
-                item = CarritoItem.objects.create(producto=producto, cantidad=1, carro=carro)
-                if len(producto_variacion) > 0:
-                    item.variacion.clear()
-                    item.variacion.add(*producto_variacion)
-                item.save()
-
-        # Normal nota
+            carrito_item = CarritoItem.objects.filter(producto=producto, carro=carro).first()
+            carrito_item.cantidad += 1
+            carrito_item.save()
         else:
+            # Si el ítem no existe, crea un nuevo ítem en el carrito
             carrito_item = CarritoItem.objects.create(
-                producto = producto,
-                cantidad = 1,
-                carro = carro,
+                producto=producto,
+                cantidad=1,
+                carro=carro,
             )
-            if len(producto_variacion) > 0:
-                carrito_item.variacion.clear()
-                carrito_item.variacion.add(*producto_variacion)
             carrito_item.save()
 
         return redirect('carro')
+       
 
 # Función para remover un ítem del carrito (reduce cantidad o elimina)
 def remover_carrito(request, producto_id, carrito_item_id):
