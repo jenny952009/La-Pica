@@ -149,7 +149,7 @@ def place_order(request, total=0, cantidad=0):
             return render(request, 'pedido/pago.html', context)
     
     # Si no es un método POST, redirigir a la página de checkout
-    messages.info(request, 'Por favor, complete los datos de envío.')
+    #messages.info(request, 'Por favor, complete los datos de envío.')
     return redirect('checkout')     
    
 # Función para mostrar el pedido completo después de la confirmación de compra

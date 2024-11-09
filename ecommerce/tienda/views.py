@@ -113,7 +113,7 @@ def agregar_reseña(request, producto_id):
             data.producto_id = producto_id
             data.user_id = request.user.id
             data.save()
-            messages.success(request, 'Tu comentario ha sido publicado. ¡Muchas gracias!')
+           # messages.success(request, 'Tu comentario ha sido publicado. ¡Muchas gracias!')
         else:
             messages.error(request, 'Por favor, Rellene todos los campos del formulario antes de enviar.')
 
