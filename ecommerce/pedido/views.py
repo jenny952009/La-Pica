@@ -102,7 +102,7 @@ def place_order(request, total=0, cantidad=0):
         cantidad += carrito_item.cantidad
 
     impuesto = round((19/100) * total, 2)
-    gran_total = total + impuesto
+    gran_total = total 
 
     # Procesar el formulario de pedido si la solicitud es un POST
     if request.method == 'POST':
