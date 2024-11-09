@@ -10,9 +10,11 @@
     {% endif %}
 
     <!-- Notificación de error de reserva -->
-    <div class="container mx_auto" id="mensaje-error" style="max-width: 600px; margin-top: 20px; display: none;">
-      <div class="alert alert-danger" role="alert" id="error-message"></div>
-    </div>
+    {% if request.GET.error == 'mesa_ocupada' %}
+      <div class="container mx_auto alert alert-danger" role="alert" style="max-width: 600px; margin-top: 20px;">
+        ¡Lo sentimos! pero la mesa que intentas reservar ya está reservada.
+      </div>
+    {% endif %}
 
     <div class="card mx-auto" style="max-width: 600px; margin-top: 50px;">
         {% include 'includes/alerts.html' %}
@@ -149,12 +151,9 @@
         if (response.ok) {
             // Si la reserva fue exitosa
             window.location.href = "?command=reservation_success&email=" + data.email;
-        } else {
-            // Mostrar mensaje de error
-            const errorMessageDiv = document.getElementById('mensaje-error');
-            const errorMessageElement = document.getElementById('error-message');
-            errorMessageElement.textContent = data.error;
-            errorMessageDiv.style.display = 'block';
+        } else if (data.error === 'mesa_ocupada') {
+            // Redirigir en caso de error por mesa ocupada
+            window.location.href = "?error=mesa_ocupada";
         }
     };
 </script>

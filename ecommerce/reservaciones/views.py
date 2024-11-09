@@ -22,8 +22,9 @@ def generar_codigo_reserva():
 
 
 def reservacion(request):
-    days = [(datetime.now() + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(1, 6)]
-
+    # Generar los próximos cinco días para el selector de días
+    days = [(timezone.now() + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(1, 6)]
+    
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
         apellido = request.POST.get('apellido')
@@ -57,7 +58,8 @@ def reservacion(request):
 
         if reserva_existente:
             return JsonResponse({
-                'error': "¡Lo sentimos! pero la mesa que intentas reservar ya está reservada."
+                'error': 'mesa_ocupada',
+                'error_msg': "¡Lo sentimos! pero la mesa que intentas reservar ya está reservada."
             }, status=400)
 
         # Generar código de reserva
@@ -70,7 +72,7 @@ def reservacion(request):
             email=email,
             telefono=telefono,
             numero_mesa=numero_mesa,
-            fecha_reserva=datetime.now(),
+            fecha_reserva=timezone.now(),
             hora_comienzo=hora_comienzo,
             personas=personas,
             codigo_reserva=codigo_reserva,
@@ -97,7 +99,7 @@ def reservacion(request):
         send_email = EmailMessage(mail_subject, body, to=[email])
         send_email.send()
 
-        # Responder con el correo y el código de reserva
+        # Redirigir en caso de éxito con el correo y el código de reserva
         return JsonResponse({'email': email, 'codigo_reserva': codigo_reserva})
 
     # Renderizar la página de reservaciones

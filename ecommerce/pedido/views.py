@@ -71,7 +71,7 @@ def pago(request):
     return JsonResponse(data)
 
 
-# Create your views here.
+#funcion del formulario de direccion de envio con sus campos a rellenar y vista de la pagina checkout
 def place_order(request, total=0, cantidad=0):
     actual_usuario = request.user
     carrito_items = CarritoItem.objects.filter(user=actual_usuario)
@@ -83,13 +83,13 @@ def place_order(request, total=0, cantidad=0):
     gran_total = 0
     impuesto = 0
 
+    # Calcular el total y la cantidad de productos
     for carrito_item in carrito_items:
         total += (carrito_item.producto.precio * carrito_item.cantidad)
         cantidad += carrito_item.cantidad
 
     impuesto = round((19/100) * total, 2)
     gran_total = total + impuesto
-
 
     if request.method == 'POST':
         form = PedidoForm(request.POST)
@@ -112,15 +112,17 @@ def place_order(request, total=0, cantidad=0):
             data.ip = request.META.get('REMOTE_ADDR')
             data.save()
 
-            yr=int(datetime.date.today().strftime('%Y'))
-            mt=int(datetime.date.today().strftime('%m'))
-            dt=int(datetime.date.today().strftime('%d'))
-            d = datetime.date(yr,mt,dt)
+            # Generación del número de pedido
+            yr = int(datetime.date.today().strftime('%Y'))
+            mt = int(datetime.date.today().strftime('%m'))
+            dt = int(datetime.date.today().strftime('%d'))
+            d = datetime.date(yr, mt, dt)
             current_date = d.strftime("%Y%m%d")
             pedido_numero = current_date + str(data.id)
             data.pedido_numero = pedido_numero
             data.save()
 
+            # Obtener el pedido y pasar al proceso de pago
             pedido = Pedido.objects.get(user=actual_usuario, is_ordered=False, pedido_numero=pedido_numero)
             context = {
                 'pedido': pedido,
@@ -132,8 +134,29 @@ def place_order(request, total=0, cantidad=0):
 
             return render(request, 'pedido/pago.html', context)
 
+        else:
+            # Si el formulario no es válido, se mantiene en la página de checkout
+            context = {
+                'form': form,
+                'carrito_items': carrito_items,
+                'total': total,
+                'impuesto': impuesto,
+                'gran_total': gran_total,
+            }
+            return render(request, 'tienda/checkout.html', context)
+
     else:
-        return redirect('checkout')
+        form = PedidoForm()
+
+    # Si la solicitud es GET, mostramos el formulario vacío en la página de checkout
+    context = {
+        'form': form,
+        'carrito_items': carrito_items,
+        'total': total,
+        'impuesto': impuesto,
+        'gran_total': gran_total,
+    }
+    return render(request, 'tienda/checkout.html', context)
 
 
 
