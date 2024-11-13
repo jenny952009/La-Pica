@@ -10,116 +10,69 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title mb-4">Dirección de envío</h4>
-                    <form action="{% url 'place_order' %}" method="post">
+                    <form id="order-form" action="{% url 'place_order' %}" method="post">
                         {% csrf_token %}
 
                         <div class="form-row">
                             <div class="col form-group">
                                 <label for="">Nombre(s)</label>
-                                <input type="text" name="nombre" class="form-control" value="{{ form.nombre.value|default_if_none:'' }}">
-                                {% if form.nombre.errors %}
-                                    <div class="text-danger">
-                                        <small>Complete este campo</small>
-                                    </div>
-                                {% endif %}
+                                <input type="text" name="nombre" class="form-control" required value="{{ form.nombre.value|default_if_none:'' }}">
                             </div>
 
                             <div class="col form-group">
                                 <label for="">Apellidos</label>
-                                <input type="text" name="apellido" class="form-control" value="{{ form.apellido.value|default_if_none:'' }}">
-                                {% if form.apellido.errors %}
-                                    <div class="text-danger">
-                                        <small>Complete este campo</small>
-                                    </div>
-                                {% endif %}
+                                <input type="text" name="apellido" class="form-control" required value="{{ form.apellido.value|default_if_none:'' }}">
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="col form-group">
                                 <label for="">Correo electrónico</label>
-                                <input type="email" name="email" class="form-control" value="{{ form.email.value|default_if_none:'' }}">
-                                {% if form.email.errors %}
-                                    <div class="text-danger">
-                                        <small>Complete este campo</small>
-                                    </div>
-                                {% endif %}
+                                <input type="email" name="email" class="form-control" required value="{{ form.email.value|default_if_none:'' }}">
                             </div>
 
                             <div class="col form-group">
                                 <label for="">Teléfono</label>
-                                <input type="text" name="telefono" class="form-control" value="{{ form.telefono.value|default_if_none:'' }}">
-                                {% if form.telefono.errors %}
-                                    <div class="text-danger">
-                                        <small>Complete este campo</small>
-                                    </div>
-                                {% endif %}
+                                <input type="text" name="telefono" class="form-control" required pattern="^\d{9}$" maxlength="9" title="Debe contener exactamente 9 dígitos" value="{{ form.telefono.value|default_if_none:'' }}">
                             </div>
+                            
                         </div>
 
                         <div class="form-row">
                             <div class="col form-group">
                                 <label for="">Dirección</label>
-                                <input type="text" name="direccion_1" class="form-control" value="{{ form.direccion_1.value|default_if_none:'' }}">
-                                {% if form.direccion_1.errors %}
-                                    <div class="text-danger">
-                                        <small>Complete este campo</small>
-                                    </div>
-                                {% endif %}
+                                <input type="text" name="direccion_1" class="form-control" required value="{{ form.direccion_1.value|default_if_none:'' }}">
                             </div>
 
                             <div class="col form-group">
                                 <label for="">Detalles de la Dirección</label>
-                                <input type="text" name="direccion_2" class="form-control" value="{{ form.direccion_2.value|default_if_none:'' }}">
-                                {% if form.direccion_2.errors %}
-                                    <div class="text-danger">
-                                        <small>Complete este campo</small>
-                                    </div>
-                                {% endif %}
+                                <input type="text" name="direccion_2" class="form-control" required value="{{ form.direccion_2.value|default_if_none:'' }}">
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="col form-group">
                                 <label for="">País</label>
-                                <input type="text" name="pais" class="form-control" value="{{ form.pais.value|default_if_none:'' }}">
-                                {% if form.pais.errors %}
-                                    <div class="text-danger">
-                                        <small>Complete este campo</small>
-                                    </div>
-                                {% endif %}
+                                <input type="text" name="pais" class="form-control" required value="{{ form.pais.value|default_if_none:'' }}">
                             </div>
 
                             <div class="col form-group">
                                 <label for="">Ciudad</label>
-                                <input type="text" name="ciudad" class="form-control" value="{{ form.ciudad.value|default_if_none:'' }}">
-                                {% if form.ciudad.errors %}
-                                    <div class="text-danger">
-                                        <small>Complete este campo</small>
-                                    </div>
-                                {% endif %}
+                                <input type="text" name="ciudad" class="form-control" required value="{{ form.ciudad.value|default_if_none:'' }}">
                             </div>
 
                             <div class="col form-group">
                                 <label for="">Región</label>
-                                <input type="text" name="region" class="form-control" value="{{ form.region.value|default_if_none:'' }}">
-                                {% if form.region.errors %}
-                                    <div class="text-danger">
-                                        <small>Complete este campo</small>
-                                    </div>
-                                {% endif %}
+                                <input type="text" name="region" class="form-control" required value="{{ form.region.value|default_if_none:'' }}">
                             </div>
                         </div>
 
                         <div class="form-row">
                             <label for="">Descripción de la orden</label>
-                            <textarea name="pedido_nota" rows="2" class="form-control">{{ form.pedido_nota.value|default_if_none:'' }}</textarea>
-                            {% if form.pedido_nota.errors %}
-                                <div class="text-danger">
-                                    <small>Complete este campo</small>
-                                </div>
-                            {% endif %}
+                            <textarea name="pedido_nota" rows="2" class="form-control" maxlength="200" title="Descripción máxima de 200 caracteres" required>{{ form.pedido_nota.value|default_if_none:'' }}</textarea>
+                            <small class="text-muted">Máximo 200 caracteres</small>
                         </div>
+                        
                     </div>
                 </div> <!-- card.// -->
             </aside> <!-- col.// -->
@@ -176,4 +129,5 @@
     </div> <!-- row.// -->
     </div> <!-- container .//  -->
 </section>
+
 {% endblock %}

@@ -159,7 +159,6 @@ def place_order(request, total=0, cantidad=0):
     return render(request, 'tienda/checkout.html', context)
 
 
-
 def pedido_completo(request):
     pedido_numero = request.GET.get('pedido_numero')
     transID = request.GET.get('pago_id')
