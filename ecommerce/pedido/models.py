@@ -1,6 +1,6 @@
 from django.db import models
 from cuenta.models import Cuenta
-from tienda.models import Producto, Variacion
+from tienda.models import Producto 
 
 
 # Create your models here.
@@ -60,7 +60,6 @@ class PedidoProducto(models.Model):
     pago = models.ForeignKey(Pago, on_delete=models.CASCADE, blank=True, null=True)
     user = models.ForeignKey(Cuenta, on_delete=models.CASCADE)
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
-    variacion = models.ManyToManyField(Variacion, blank=True)
     cantidad = models.IntegerField()
     producto_precio = models.FloatField()
     ordered = models.BooleanField(default=False)
