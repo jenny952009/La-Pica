@@ -83,8 +83,8 @@ def pago(request):    # Carga los datos enviados en la solicitud POST
     except Pedido.DoesNotExist:
         return JsonResponse({'error': 'Pedido no encontrado.'}, status=404)
 
-# Create your views here.
-# Función para realizar el pedido
+#funcion del formulario de direccion de envio con sus campos a rellenar y vista de la pagina checkout
+
 def place_order(request, total=0, cantidad=0):
     actual_usuario = request.user
     carrito_items = CarritoItem.objects.filter(user=actual_usuario)
@@ -96,15 +96,20 @@ def place_order(request, total=0, cantidad=0):
     # Calcula el total y el impuesto para los elementos en el carrito
     gran_total = 0
     impuesto = 0
-    # Calcular el total y la cantidad del carrito
+
+
+    # Calcular el total y la cantidad de productos
+
     for carrito_item in carrito_items:
         total += (carrito_item.producto.precio * carrito_item.cantidad)
         cantidad += carrito_item.cantidad
 
     impuesto = round((19/100) * total, 2)
+
     gran_total = total 
 
     # Procesar el formulario de pedido si la solicitud es un POST
+
     if request.method == 'POST':
         form = PedidoForm(request.POST)
 
@@ -125,17 +130,24 @@ def place_order(request, total=0, cantidad=0):
             data.impuesto = impuesto
             data.ip = request.META.get('REMOTE_ADDR')
             data.save()
+
             # Crear un número de pedido único basado en la fecha y el ID del pedido
             yr=int(datetime.date.today().strftime('%Y'))
             mt=int(datetime.date.today().strftime('%m'))
             dt=int(datetime.date.today().strftime('%d'))
             d = datetime.date(yr,mt,dt)
+
             current_date = d.strftime("%Y%m%d")
             pedido_numero = current_date + str(data.id)
             data.pedido_numero = pedido_numero
             data.save()
+
+
+            # Obtener el pedido y pasar al proceso de pago
+
            
             # Obtiene el pedido para enviarlo a la página de pago
+
             pedido = Pedido.objects.get(user=actual_usuario, is_ordered=False, pedido_numero=pedido_numero)
         # Contexto para el template de pago
             context = {
@@ -147,12 +159,41 @@ def place_order(request, total=0, cantidad=0):
             }
             # Redirigir al pago
             return render(request, 'pedido/pago.html', context)
+
+
+        else:
+            # Si el formulario no es válido, se mantiene en la página de checkout
+            context = {
+                'form': form,
+                'carrito_items': carrito_items,
+                'total': total,
+                'impuesto': impuesto,
+                'gran_total': gran_total,
+            }
+            return render(request, 'tienda/checkout.html', context)
+
+    else:
+        form = PedidoForm()
+
+    # Si la solicitud es GET, mostramos el formulario vacío en la página de checkout
+    context = {
+        'form': form,
+        'carrito_items': carrito_items,
+        'total': total,
+        'impuesto': impuesto,
+        'gran_total': gran_total,
+    }
+    return render(request, 'tienda/checkout.html', context)
+
+
+
     
     # Si no es un método POST, redirigir a la página de checkout
     #messages.info(request, 'Por favor, complete los datos de envío.')
     return redirect('checkout')     
    
 # Función para mostrar el pedido completo después de la confirmación de compra
+
 def pedido_completo(request):
     pedido_numero = request.GET.get('pedido_numero')
     transID = request.GET.get('pago_id')

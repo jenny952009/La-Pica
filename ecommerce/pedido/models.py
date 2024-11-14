@@ -24,20 +24,19 @@ class Pedido(models.Model):
         ('Cancelled', 'Cancelado'),
     )
 
-
     user = models.ForeignKey(Cuenta, on_delete=models.SET_NULL, null=True)
     pago = models.ForeignKey(Pago, on_delete=models.SET_NULL, blank=True, null=True)
     pedido_numero = models.CharField(max_length=20)
-    nombre = models.CharField(max_length=50)
-    apellido = models.CharField(max_length=50)
-    telefono = models.CharField(max_length=50)
-    email = models.CharField(max_length=50)
-    direccion_1 = models.CharField(max_length=100)
-    direccion_2 = models.CharField(max_length=100)
-    pais = models.CharField(max_length=50)  # Agregado mio
-    ciudad = models.CharField(max_length=50)  # Agregado mio
-    region = models.CharField(max_length=20)  #
-    pedido_nota = models.CharField(max_length=100, blank=True)
+    nombre = models.CharField(max_length=50, blank=False)
+    apellido = models.CharField(max_length=50, blank=False)
+    telefono = models.CharField(max_length=50, blank=False)
+    email = models.CharField(max_length=50, blank=False)
+    direccion_1 = models.CharField(max_length=100, blank=False)
+    direccion_2 = models.CharField(max_length=100, blank=True)  # Opcional
+    pais = models.CharField(max_length=50, blank=False)
+    ciudad = models.CharField(max_length=50, blank=False)
+    region = models.CharField(max_length=20, blank=False)
+    pedido_nota = models.CharField(max_length=100, blank=True)  # Opcional
     pedido_total = models.FloatField()
     impuesto = models.FloatField()
     status = models.CharField(max_length=50, choices=STATUS, default='New')
@@ -46,14 +45,11 @@ class Pedido(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-
     def nombre_completo(self):
         return f'{self.nombre} {self.apellido}'
 
-
     def direccion_completa(self):
         return f'{self.direccion_1} {self.direccion_2}'
-
 
     def __str__(self):
         return self.nombre
