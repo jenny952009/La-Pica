@@ -208,8 +208,11 @@ def pedido_completo(request):
       
         # Obtener el pago relacionado al pedido
         pago = Pago.objects.get(pago_id=transID)
-
-                  
+#----------------------------------------------
+        # Agregar URLs de reseña para cada producto ordenado
+        for producto in ordered_products:
+            producto.resena_url = reverse('agregar_reseña', args=[producto.producto_id])
+ #------------------------------------------------------------                 
      # Contexto para la plantilla 
         context = {
             'pedido': pedido,

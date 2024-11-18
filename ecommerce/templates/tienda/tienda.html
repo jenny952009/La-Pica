@@ -41,15 +41,13 @@
           <div class="form-inline">
             <span class="mr-md-auto"><b>{{ producto_count }}</b> Productos Encontrados</span>
           </div>
-        </header><!-- sect-heading -->
-        {% comment %} agregado {% endcomment %}
+        </header>
         <div class="row">
           {% if productos %}
           {% for producto in productos %}
           <div class="col-md-4">
             <figure class="card card-product-grid">
               <div class="img-wrap">
-
                 <a href="{{ producto.get_url }}"><img src="{{ producto.images.url }}" alt="{{ producto.producto_nombre }}"></a>
 
               </div> <!-- img-wrap.// -->

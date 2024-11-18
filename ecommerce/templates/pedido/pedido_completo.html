@@ -8,9 +8,9 @@
 	<br>
     <div class="text-center">
         <a href="{% url 'tienda' %}" class="btn btn-success">Seguir comprando</a>
-        {% for product in ordered_products %}
-            <a href="{% url 'agregar_reseña' producto_id=product.producto_id %}" class="btn btn-primary mx-2">Agregar reseña</a>
-        {% endfor %}
+        {% comment %} {% for producto in ordered_products %}  
+            <a href="{% url 'agregar_reseña' producto_id=producto.producto_id %}" class="btn btn-primary mx-2">Agregar reseña</a>
+        {% endfor %}{% endcomment %}
     </div>
     
 </div>

@@ -1,6 +1,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="container" style="margin-top: 50px;">
+  <!-- Mostrar mensajes de éxito o error -->
+  {% if messages %}
+      <div class="alert alert-info">
+          {% for message in messages %}
+              <p>{{ message }}</p>
+          {% endfor %}
+      </div>
+  {% endif %}
 
 <section class="section-content padding-y bg">
   <div class="container">
@@ -11,11 +20,10 @@
         <aside class="col-md-6">
           <article class="gallery-wrap">
             <div class="img-big-wrap mainImage">
-              <center> <img src="{{ single_product.images.url }}"> </center>
-              
-            </div> <!-- img-big-wrap.// -->
-          </article> <!-- gallery-wrap .end// -->
-          <ul class="thumb">
+              <center><img src="{{ single_product.images.url }}"></center>
+            </div>
+          </article>
+          <ul class="thumb"> <!-- Galería de imágenes del producto -->
             <li>
               <a href="{{ single_product.images.url }}" target="mainImage"><img src="{{ single_product.images.url }}" alt="Imagen del Producto"></a>
               {% for i in producto_galeria %}
@@ -25,12 +33,9 @@
           </ul>
         </aside>
         <main class="col-md-6 border-left">
-
           <form action="{% url 'agregar_carrito' single_product.id %}" method="POST">
             {% csrf_token %}
-
             <article class="content-body">
-
               <h2 class="title">{{ single_product.producto_nombre }}</h2>
               <div class="rating-star">
                 <span>
@@ -48,45 +53,33 @@
               </div>
 
               <p>{{ single_product.descripcion }}</p>
-
-            <!------------------------------------------------------------------------------------------>
-            {% comment %} <hr> {% endcomment %}
-                          
-            <hr>
-            <!------------------------------------------------------------------------------------------>
+              <hr>
 
               {% if single_product.stock <= 0 %}
-              <h5>Lo lamentamos, este producto esta sin stock en este momento</h5>
+                <h5>Lo lamentamos, este producto está sin stock en este momento</h5>  <!-- Mensaje si no hay stock -->
               {% else %}
-              <button type="submit" class="btn  btn-primary">Agregar al Carrito</button>
-
-              {% comment %} <button type="submit" class="btn  btn-primary"> <span class="text">Agregar al Carrito</span> <i class="fas fa-shopping-cart"></i>  </button> {% endcomment %}
-
+                <button type="submit" class="btn btn-primary">Agregar al Carrito</button><!-- Botón para agregar al carrito -->
               {% endif %}
 
-            </article> <!-- product-info-aside .// -->
-
+            </article>
           </form>
-
-        </main> <!-- col.// -->
-      </div> <!-- row.// -->
-    </div> <!-- card.// -->
-    <!-- ============================ COMPONENT 1 END .// ================================= -->
+        </main>
+      </div>
+    </div>
 
     <br>
 
     <div class="row">
       <div class="col-md-9">
-
+        <!-- Formulario para agregar reseña -->
         <form action="{% url 'agregar_reseña' single_product.id %}" method="post">
           {% csrf_token %}
           <h5>Escribe tu reseña o comentario</h5>
-
           <br>
           <div class="">
-            <label for="">¿Cómo calificarias este producto?</label>
+            <label for="">¿Cómo calificarías este producto?</label>
             <br>
-
+            <!-- Estrellas de calificación -->
             <div class="rate">
                 <input type="radio" name="rating" value="5" id="rating10"><label for="rating10" title="5"></label>
                 <input type="radio" name="rating" value="4.5" id="rating9"><label for="rating9" title="4.5" class="half"></label>
@@ -101,29 +94,26 @@
             </div>
             <br>
 
-            Titulo del comentario:
+            Título del comentario:
             <input type="text" class="form-control" name="titulo" value="">
             <br>
 
             Comentario:
             <textarea name="reseña" rows="4" class="form-control" placeholder="Escribe aquí tu reseña"></textarea>
             <br>
+
             {% if user.is_authenticated %}
-
-            {% if pedidoproducto %}
-            <input type="submit" name="" value="Enviar reseña" class="btn btn-primary">
-            {% else %}
-              <p>Primero necesitas realizar una compra para escribir una reseña!</p>
-            {% endif %}
-
+              {% if pedidoproducto %}
+                <input type="submit" name="" value="Enviar reseña" class="btn btn-primary">
+              {% else %}
+                <p>Primero necesitas realizar una compra para escribir una reseña!</p>
+              {% endif %}
             {% else %}
               <p>Para enviar un comentario debes estar registrado <span><a href="{% url 'login' %}">Inicia Sesión</a></span></p>
             {% endif %}
           </div>
 
           {% include 'includes/alerts.html' %}
-
-
         </form>
         <br>
 
@@ -139,7 +129,6 @@
             </span>
           </div>
         </header>
-        {% comment %} {% for review in reviews %} {% endcomment %}
 
         {% for reseña in reviews %}
         <article class="box mb-3">
@@ -150,30 +139,26 @@
               <div class="rating-star">
                 <span>
                   <i class="fa fa-star{% if reseña.rating == 0.5 %}-half-o{% elif reseña.rating < 1 %}-o {% endif %}" aria-hidden="true"></i>
-                  <i class="fa fa-star{% if reseña.rating == 1.5 %}-half-o{% elif reseña.rating < 2 %}-o {% endif %}" aria-hidden="true"></i>
-                  <i class="fa fa-star{% if reseña.rating == 2.5 %}-half-o{% elif reseña.rating < 3 %}-o {% endif %}" aria-hidden="true"></i>
-                  <i class="fa fa-star{% if reseña.rating == 3.5 %}-half-o{% elif reseña.rating < 4 %}-o {% endif %}" aria-hidden="true"></i>
-                  <i class="fa fa-star{% if reseña.rating == 4.5 %}-half-o{% elif reseña.rating < 5 %}-o {% endif %}" aria-hidden="true"></i>
+                  <i class="fa fa-star{% if reseña.rating < 1.5 %}-o{% elif reseña.rating >= 1.5 and reseña.rating < 2 %}-half-o {% endif %}" aria-hidden="true"></i>
+                  <i class="fa fa-star{% if reseña.rating < 2.5 %}-o{% elif reseña.rating >= 2.5 and reseña.rating < 3 %}-half-o {% endif %}" aria-hidden="true"></i>
+                  <i class="fa fa-star{% if reseña.rating < 3.5 %}-o{% elif reseña.rating >= 3.5 and reseña.rating < 4 %}-half-o {% endif %}" aria-hidden="true"></i>
+                  <i class="fa fa-star{% if reseña.rating < 4.5 %}-o{% elif reseña.rating >= 4.5 and reseña.rating < 5 %}-half-o {% endif %}" aria-hidden="true"></i>
                 </span>
               </div>
+              <p class="my-2">{{ reseña.titulo }}</p>
+              <p class="mb-0">{{ reseña.reseña }}</p>
             </div>
-          </div> <!-- icontext.// -->
-          <div class="mt-3">
-            <h6>{{ reseña.titulo }}</h6>
-            <p>
-              {{ reseña.reseña }}
-            </p>
           </div>
         </article>
+        {% empty %}
+        <p>No hay reseñas aún para este producto.</p>
         {% endfor %}
-
-
-
-      </div> <!-- col.// -->
-    </div> <!-- row.// -->
-
-
-  </div> <!-- container .//  -->
+      </div>
+    </div>
+  </div>
 </section>
+
 {% endblock %}
-<!-- ========================= SECTION CONTENT END// ========================= -->
+
+
+
