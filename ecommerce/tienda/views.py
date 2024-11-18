@@ -97,15 +97,14 @@ def search(request):
 #-----------------------------comentarios-------------------------------------------    
 # Vista para enviar una reseña  
 def agregar_reseña(request, producto_id):
+ # Recupera la URL de referencia o usa una URL predeterminada si no existe
     url = request.META.get('HTTP_REFERER')  # Guarda la URL previa para redirigir después del procesamiento de la reseña
     # Verifica si la solicitud es POST (es decir, si el formulario fue enviado)
     if request.method == 'POST':
-# Verifica que el usuario haya comprado el producto antes de permitirle enviar una reseña
-       # producto_comprado = PedidoProducto.objects.filter(usuario=request.user, producto_id=producto_id).exists()
-
         form = ReseñaForm(request.POST)
+# Verifica que el usuario haya comprado el producto antes de permitirle enviar una reseña
         if form.is_valid():
-            data = ReseñaRating()
+            data = ReseñaRating()   # Guarda la reseña
             data.titulo = form.cleaned_data['titulo']
             data.rating = form.cleaned_data['rating']
             data.reseña= form.cleaned_data['reseña']
@@ -113,12 +112,10 @@ def agregar_reseña(request, producto_id):
             data.producto_id = producto_id
             data.user_id = request.user.id
             data.save()
-           # messages.success(request, 'Tu comentario ha sido publicado. ¡Muchas gracias!')
+         # Mensaje de éxito
+            messages.success(request, 'Tu comentario ha sido publicado. ¡Gracias!')
         else:
-            messages.error(request, 'Por favor, Rellene todos los campos del formulario antes de enviar.')
+            messages.error(request, 'Por favor, rellena todos los campos antes de enviar.')            # Mensaje de error si el formulario no es válido
+        return redirect(url if url else reverse('producto_detalle', args=[producto_id])) 
 
-        # Redirige de nuevo a la vista `agregar_reseña` pasando el `producto_id`
-        return redirect(reverse('agregar_reseña', args=[producto_id]))
-
-
-    return redirect('home') 
+    return redirect('home')  # Redirigir al home
