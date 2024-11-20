@@ -1,14 +1,18 @@
-from django.contrib import admin  # Importa el módulo admin de Django para poder registrar modelos en el panel de administración
+from django.contrib import admin
 from .models import Categoria
 
-# Register your models here.
-# Definición de la clase de administración para el modelo Categoria
-
 class CategoriaAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('categoria_nombre',)}     # Campo que permite generar automáticamente el slug basado en el nombre de la categoría
-    list_display = ('categoria_nombre', 'slug')
+    prepopulated_fields = {'slug': ('categoria_nombre',)}  # Generar automáticamente el slug
+    list_display = ('categoria_nombre', 'slug', 'cat_image_preview')  # Agregar la vista previa de la imagen
 
+    # Método para mostrar una vista previa de la imagen en la lista de categorías
+    def cat_image_preview(self, obj):
+        if obj.cat_image:
+            return f'<img src="{obj.cat_image.url}" width="50" height="50" />'
+        return "Sin imagen"
+    
+    cat_image_preview.allow_tags = True  # Permitir el uso de etiquetas HTML
+    cat_image_preview.short_description = 'Vista previa de la imagen'  # Nombre en la columna
 
-# Registro del modelo Categoria junto con su clase de administración
-
+# Registrar el modelo y la clase admin
 admin.site.register(Categoria, CategoriaAdmin)

@@ -39,6 +39,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -52,9 +53,11 @@ INSTALLED_APPS = [
     'pedido',
     'reservaciones',
     'suscripcion',
-    #'cuenta.apps.CuentaConfig',  # Registro de la clase de configuración
     'django_extensions',
 ]
+
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -157,9 +160,9 @@ STATICFILES_DIRS = [
     'ecommerce/static'
 ]
 #/media/
-MEDIA_URL = '/media/'
+MEDIA_URL = '/media/'    # Esta es la URL pública para acceder a los archivos de medios
 #MEDIA_ROOT = BASE_DIR /'media'   
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # Ruta en el sistema de archivos donde se guardan los archivos
 # import os 
 
 
@@ -182,3 +185,72 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'cat20pam@gmail.com'  # Reemplaza con tu correo
 EMAIL_HOST_PASSWORD = 'kvfi ogry raql huzw'  # Reemplaza con tu contraseña
+
+
+JAZZMIN_SETTINGS = {
+    "actions_sticky": True,  # Mantiene las acciones visibles al desplazarse
+    "navigation_expanded": True,  # Expande la navegación para mayor claridad
+
+    # Welcome text on the login screen
+    "welcome_sign": "Bienvenidos al Panel de Administrador",
+
+    # Logo to use for your site, must be present in static files, used for brand on top left
+    "site_logo": "images/logue.ico",  # Asegúrate de que esta ruta sea válida y el archivo esté en tu directorio estático
+
+    # Title and header for the site
+    "site_title": "Administración E-Commerce PICA",
+    "site_header": "Panel de Administración LaPica",
+    "site_brand": "LaPica E-commerce",
+    "site_icon": "fa fa-cogs",  # Aquí puedes usar un icono de FontAwesome o uno personalizado
+
+    # Customization for the user menu links
+    "usermenu_links": [
+        {"name": "Perfil", "url": "admin:auth_user_change", "permissions": ["auth.change_user"]},
+        {"name": "Salir", "url": "/logout/", "permissions": ["auth.logout"]},
+    ],
+
+    # Top menu links (links at the top of the page)
+    "topmenu_links": [
+        {"name": "Pedidos", "url": "/admin/app/pedido/", "permissions": ["auth.view_user"]},
+        {"name": "Ventas", "url": "/admin/app/ventas/", "permissions": ["auth.view_user"]},
+    ],
+
+    # Set to True if you want to see the UI builder (for admin customization)
+    "show_ui_builder": False,
+
+    # Controls whether the navigation menu on the left side is expanded or collapsed
+    "navigation_expanded": True,
+
+    # Shows the navigation bar
+    "show_navigation": True,
+
+    # Control which apps are displayed in the sidebar (you can control the visibility of apps/modules)
+    "hide_apps": [],  # Apps that you want to hide from the sidebar
+    "show_apps": ["auth", "tienda", "carrito", "pedidos", "cuenta"],  # Visible apps
+    
+    # Customize the model links and the order they appear in the sidebar
+    "order_with_respect_to": ["auth", "tienda", "carrito", "pedidos", "cuenta"],  # Apps order
+    "actions_sticky": True,  # Mantiene las acciones visibles al desplazarse
+    "navigation_expanded": True,  # Expande la navegación para mayor claridad
+
+    # Sidebar customization
+    "default_icon_type": "fa",  # Use FontAwesome icons
+    "default_icon_color": "green",  # Set a default icon color
+    "icons": {
+        "auth": "fa fa-users",
+        "tienda": "fa fa-store",
+        "carrito": "fa fa-shopping-cart",
+        "pedidos": "fa fa-box",
+        "cuenta": "fa fa-user-circle",
+    },
+
+    # Footer settings
+    "footer": "LaPica E-commerce - Todos los derechos reservados.",
+
+    # Custom links or sections that you want to appear in the footer (optional)
+    "footer_links": [
+        {"name": "Documentación", "url": "https://docs.example.com"},
+        {"name": "Soporte", "url": "https://support.example.com"},
+    ],
+}
+

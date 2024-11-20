@@ -54,9 +54,8 @@ class Pedido(models.Model):
     def __str__(self):
         return self.nombre
 
-
 class PedidoProducto(models.Model):
-    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
+    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name='productos')
     pago = models.ForeignKey(Pago, on_delete=models.CASCADE, blank=True, null=True)
     user = models.ForeignKey(Cuenta, on_delete=models.CASCADE)
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)

@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 #Gestionar cómo se crean tanto usuarios regulares como superusuario
 class MiCuentaManager(BaseUserManager):
@@ -38,7 +38,7 @@ class MiCuentaManager(BaseUserManager):
         return user
 
 #Se definen los campos básicos para la cuenta
-class Cuenta(AbstractBaseUser):
+class Cuenta(AbstractBaseUser, PermissionsMixin):
     nombre = models.CharField(max_length=30)
     apellido = models.CharField(max_length=55)
     username = models.CharField(max_length=50, unique=True)  # Asegúrate de que sea 'username'
@@ -50,7 +50,7 @@ class Cuenta(AbstractBaseUser):
     last_login = models.DateTimeField(auto_now=True)
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     is_superadmin = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email' #usuarios inician sesión usando su correo electrónico
@@ -75,7 +75,7 @@ class UsuarioPerfil(models.Model):
     user = models.OneToOneField(Cuenta, on_delete=models.CASCADE)  # Se elimina el perfil al eliminar el usuario
     direccion_1 = models.CharField(blank=True, max_length=100)
     direccion_2 = models.CharField(blank=True, max_length=100)
-    profile_picture = models.ImageField(blank=True, upload_to='userprofile')
+    profile_picture = models.ImageField(upload_to='userprofile/', blank=True, default='default_profile.jpg')
     ciudad = models.CharField(blank=True, max_length=20)
     region = models.CharField(blank=True, max_length=20)
     pais = models.CharField(blank=True, max_length=20)
@@ -84,4 +84,4 @@ class UsuarioPerfil(models.Model):
         return self.user.nombre
 
     def direccion_completa(self):
-        return f'{self.direccion_1} {self.direccion_2}'
+        return f'{self.direccion_1} {self.direccion_2}'.strip()

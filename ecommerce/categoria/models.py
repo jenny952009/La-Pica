@@ -9,8 +9,8 @@ class Categoria(models.Model):
     cat_image =  models.ImageField(upload_to='photos/categorias', blank=True)
 
     class Meta:
-        verbose_name = 'Categoria'
-        verbose_name_plural = 'Categorias'
+        verbose_name = 'Categoria'     # Nombre en singular
+        verbose_name_plural = 'Categorias' # Nombre en plural
 
     # Método que genera la URL para acceder a los productos de esta categoría.
     def get_url(self):

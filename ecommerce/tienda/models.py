@@ -40,7 +40,7 @@ class ReseñaRating(models.Model):
     user = models.ForeignKey(Cuenta, on_delete=models.CASCADE)
     titulo = models.CharField(max_length=100, blank=True)
     reseña = models.CharField(max_length=500, blank=True)
-    rating = models.FloatField()  # Calificación del producto (1-5)
+    rating = models.FloatField()  
     ip = models.CharField(max_length=20, blank=True)
     status = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -48,8 +48,6 @@ class ReseñaRating(models.Model):
 
     def __str__(self):
         return self.titulo
-   
-   
 
 class ProductoGaleria(models.Model):
     producto = models.ForeignKey(Producto, default=None, on_delete=models.CASCADE)
@@ -62,4 +60,14 @@ class ProductoGaleria(models.Model):
     def get_first_image(producto):
         galeria = ProductoGaleria.objects.filter(producto=producto).first()
         return galeria.image.url if galeria else 'path/to/default/image.png'
- 
+    
+    def get_stars(self):
+        """Devuelve el promedio de estrellas del producto asociado."""
+        return self.producto.averageReview()
+    get_stars.short_description = "Estrellas promedio" 
+    
+    def get_stars(self):
+        """Devuelve el promedio de estrellas del producto asociado con 2 decimales."""
+        average = self.producto.averageReview()
+        return f"{average:.2f}"  # Formatea el promedio a 2 decimales
+    get_stars.short_description = "Estrellas promedio"  # Nombre en el admin
