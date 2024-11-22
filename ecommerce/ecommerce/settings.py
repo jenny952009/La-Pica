@@ -40,6 +40,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'jazzmin',
+    'empleados',
+    'ventas',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -54,6 +56,7 @@ INSTALLED_APPS = [
     'reservaciones',
     'suscripcion',
     'django_extensions',
+    'import_export', #exportar datos del modelo de ventas a formatos como CSV, Excel o JSON 
 ]
 
 
@@ -109,7 +112,7 @@ DATABASES = {
         'NAME': 'lapica',
         'USER': 'root',
         'PASSWORD': '',
-        'HOST': 'localhost',  # o la dirección del servidor MySQL
+        'HOST': 'localhost',  #  dirección del servidor MySQL
         'PORT': '3306',       # El puerto predeterminado de MySQL
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
@@ -198,9 +201,9 @@ JAZZMIN_SETTINGS = {
     "site_logo": "images/logue.ico",  # Asegúrate de que esta ruta sea válida y el archivo esté en tu directorio estático
 
     # Title and header for the site
-    "site_title": "Administración E-Commerce PICA",
+    "site_title": "Administración La Pica de la Chabelita",
     "site_header": "Panel de Administración LaPica",
-    "site_brand": "LaPica E-commerce",
+    "site_brand": "La Pica de la Chabelita Restorant",
     "site_icon": "fa fa-cogs",  # Aquí puedes usar un icono de FontAwesome o uno personalizado
 
     # Customization for the user menu links
@@ -213,6 +216,8 @@ JAZZMIN_SETTINGS = {
     "topmenu_links": [
         {"name": "Pedidos", "url": "/admin/app/pedido/", "permissions": ["auth.view_user"]},
         {"name": "Ventas", "url": "/admin/app/ventas/", "permissions": ["auth.view_user"]},
+        {"name": "Inicio", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "Reportes", "url": "reportes/ventas", "permissions": ["auth.view_user"]},
     ],
 
     # Set to True if you want to see the UI builder (for admin customization)
@@ -252,5 +257,15 @@ JAZZMIN_SETTINGS = {
         {"name": "Documentación", "url": "https://docs.example.com"},
         {"name": "Soporte", "url": "https://support.example.com"},
     ],
-}
 
+
+    "custom_links": {
+        "ventas": [{
+            "name": "Gráfico de Ventas",
+            "url": "admin:ventas_grafico",
+            "icon": "fas fa-chart-pie",
+        }],
+    },
+    
+ 
+}

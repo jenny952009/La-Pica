@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Ventas del Día</h2>
+<table>
+    <tr>
+        <th>Empleado</th>
+        <th>Fecha</th>
+        <th>Estado</th>
+        <th>Total</th>
+    </tr>
+    {% for venta in ventas %}
+    <tr>
+        <td>{{ venta.empleado.usuario.username }}</td>
+        <td>{{ venta.fecha }}</td>
+        <td>{{ venta.get_estado_display }}</td>
+        <td>{{ venta.total }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>Total Ventas: {{ total_ventas }}</h3>
+
+<!-- Gráfico de ventas -->
+<canvas id="ventasChart" width="400" height="400"></canvas>
+
+<!-- Incluir Chart.js desde CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    var ctx = document.getElementById('ventasChart').getContext('2d');
+    var ventasChart = new Chart(ctx, {
+        type: 'bar',  // Tipo de gráfico, en este caso, gráfico de barras
+        data: {
+            labels: ['Enero', 'Febrero', 'Marzo', 'Abril'],  // Meses de ejemplo
+            datasets: [{
+                label: 'Ventas por Mes',
+                data: [12000, 15000, 13000, 17000],  // Datos de ejemplo para cada mes
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        }
+    });
+</script>
+{% endblock %}

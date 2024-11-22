@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
 
 #Gestionar cómo se crean tanto usuarios regulares como superusuario
 class MiCuentaManager(BaseUserManager):
@@ -39,25 +39,43 @@ class MiCuentaManager(BaseUserManager):
 
 #Se definen los campos básicos para la cuenta
 class Cuenta(AbstractBaseUser, PermissionsMixin):
-    nombre = models.CharField(max_length=30)
-    apellido = models.CharField(max_length=55)
-    username = models.CharField(max_length=50, unique=True)  # Asegúrate de que sea 'username'
-    email = models.EmailField(max_length=50, unique=True)
-    telefono = models.CharField(max_length=50)
+    # Campos de la cuenta 
+    nombre = models.CharField(max_length=30, verbose_name="Nombre")
+    apellido = models.CharField(max_length=55, verbose_name="Apellido")
+    username = models.CharField(max_length=50, unique=True, verbose_name="Nombre de usuario")
+    email = models.EmailField(max_length=50, unique=True, verbose_name="Correo electrónico")
+    telefono = models.CharField(max_length=50, verbose_name="Teléfono")
 
     # Campos atributos
-    date_joined = models.DateTimeField(auto_now_add=True)
-    last_login = models.DateTimeField(auto_now=True)
-    is_admin = models.BooleanField(default=False)
-    is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-    is_superadmin = models.BooleanField(default=False)
+    date_joined = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de registro")
+    last_login = models.DateTimeField(auto_now=True, verbose_name="Último inicio de sesión")
+    is_admin = models.BooleanField(default=False, verbose_name="¿Es administrador?")
+    is_staff = models.BooleanField(default=False, verbose_name="¿Es staff?")
+    is_active = models.BooleanField(default=True, verbose_name="¿Está activo?")
+    is_superadmin = models.BooleanField(default=False, verbose_name="¿Es superadministrador?")
+
+    # Campos adicionales para permisos y grupos
+    groups = models.ManyToManyField(
+        Group,
+        related_name="user_set",
+        blank=True,
+        help_text="Los grupos a los que pertenece este usuario.",
+        verbose_name="grupos",
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,
+        related_name="user_set",
+        blank=True,
+        help_text="Permisos específicos para este usuario.",
+        verbose_name="permisos de usuario",
+    )
 
     USERNAME_FIELD = 'email' #usuarios inician sesión usando su correo electrónico
     REQUIRED_FIELDS = ['username', 'nombre', 'apellido']
 
     objects = MiCuentaManager()
 
+    
     def nombre_completo(self):
         return f'{self.nombre} {self.apellido}'
 
@@ -70,18 +88,34 @@ class Cuenta(AbstractBaseUser, PermissionsMixin):
     def has_module_perms(self, add_label):
         return True
 
-#Información de la Cuenta y permite agregar datos de perfil adicionales
+    class Meta:
+        verbose_name = "Cuenta de usuario"
+        verbose_name_plural = "Cuentas de usuarios"
+        
+    #Información de la Cuenta y permite agregar datos de perfil adicionales
 class UsuarioPerfil(models.Model):
-    user = models.OneToOneField(Cuenta, on_delete=models.CASCADE)  # Se elimina el perfil al eliminar el usuario
-    direccion_1 = models.CharField(blank=True, max_length=100)
-    direccion_2 = models.CharField(blank=True, max_length=100)
-    profile_picture = models.ImageField(upload_to='userprofile/', blank=True, default='default_profile.jpg')
-    ciudad = models.CharField(blank=True, max_length=20)
-    region = models.CharField(blank=True, max_length=20)
-    pais = models.CharField(blank=True, max_length=20)
-
+    user = models.OneToOneField(
+        Cuenta, 
+        on_delete=models.CASCADE, 
+        verbose_name="Usuario"
+    )
+    direccion_1 = models.CharField(blank=True, max_length=100, verbose_name="Dirección principal")
+    direccion_2 = models.CharField(blank=True, max_length=100, verbose_name="Detalle Dirección")
+    profile_picture = models.ImageField(
+        upload_to='userprofile/', 
+        blank=True, 
+        default='default_profile.jpg', 
+        verbose_name="Foto de Perfil"
+    )
+    ciudad = models.CharField(blank=True, max_length=20, verbose_name="Ciudad")
+    region = models.CharField(blank=True, max_length=20, verbose_name="Región")
+    pais = models.CharField(blank=True, max_length=20, verbose_name="País")
     def __str__(self):
         return self.user.nombre
 
     def direccion_completa(self):
         return f'{self.direccion_1} {self.direccion_2}'.strip()
+
+    class Meta:
+        verbose_name = "Perfil de usuario"
+        verbose_name_plural = "Perfiles de usuarios"

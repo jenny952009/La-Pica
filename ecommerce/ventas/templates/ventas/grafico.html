@@ -1,0 +1,22 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<h1>Gráfico de Ventas por Estado</h1>
+<canvas id="graficoVentasPorEstado" width="400" height="200"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctx = document.getElementById('graficoVentasPorEstado').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: {{ estados|safe }},
+            datasets: [{
+                label: 'Ventas por Estado',
+                data: {{ datos|safe }},
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
+                borderWidth: 1
+            }]
+        }
+    });
+</script>
+{% endblock %}

@@ -13,6 +13,7 @@ urlpatterns = [
     path('pedido/', include('pedido.urls')),
     path('', include('reservaciones.urls')),
     path('suscripcion/', include('suscripcion.urls')),
+    path('ventas/', include('ventas.urls')),  # Rutas para la app de ventas
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)# Agregar la configuración para servir archivos de medios durante el desarrollo
 

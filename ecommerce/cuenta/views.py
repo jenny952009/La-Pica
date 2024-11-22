@@ -20,7 +20,7 @@ def registrar(request):
     if request.method == 'POST':
         form = RegistrarForm(request.POST)
         if form.is_valid():
-                        # Creación de la cuenta de usuario y perfil.
+        # Creación de la cuenta de usuario y perfil.
 
             nombre = form.cleaned_data['nombre']
             apellido = form.cleaned_data['apellido']
@@ -28,6 +28,11 @@ def registrar(request):
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             username = email.split("@")[0]
+            # Verifica si el username ya existe
+            if Cuenta.objects.filter(username=username).exists():
+                messages.error(request, 'El nombre de usuario ya existe. Por favor, elige otro.')
+                return redirect('registrar')
+            
             user = Cuenta.objects.create_user(nombre=nombre, apellido=apellido, email=email, username=username, password=password)
             user.telefono = telefono
             user.save()

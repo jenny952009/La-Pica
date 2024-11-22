@@ -1,5 +1,6 @@
 from django import forms
 from .models import Cuenta, UsuarioPerfil
+from django.core.validators import FileExtensionValidator
 
 class RegistrarForm(forms.ModelForm):
     
@@ -35,6 +36,13 @@ class RegistrarForm(forms.ModelForm):
                 'Parece que la contraseña no coincide, verifique su información.'
             )
 
+    def save(self, commit=True):
+        user = super(RegistrarForm, self).save(commit=False)
+        user.set_password(self.cleaned_data['password'])
+        if commit:
+            user.save()
+        return user
+
 
 class UsuarioForm(forms.ModelForm):
     class Meta:
@@ -59,5 +67,10 @@ class UsuarioPerfilForm(forms.ModelForm):
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
 
-
+    profile_picture = forms.ImageField(
+        required=False,
+        error_messages={'invalid': 'Solo archivos de imagen.'},
+        widget=forms.FileInput,
+        validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])]
+)
 
