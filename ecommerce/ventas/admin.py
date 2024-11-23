@@ -1,46 +1,34 @@
-from django.shortcuts import render
-from import_export import resources # type: ignore
-from import_export.admin import ExportMixin # type: ignore
-
 from django.contrib import admin
-from .models import Venta, Cupon
-from django.urls import path
-from django.template.response import TemplateResponse
-from django.db.models import Count
+from django.utils.html import format_html
+from .models import Venta  # Suponiendo que tienes un modelo Venta en ventas
+from pedido.models import Pedido, PedidoProducto
+from django.db.models import Sum
 
-@admin.register(Cupon)
-class CuponAdmin(admin.ModelAdmin):
-    list_display = ('codigo', 'descuento', 'activo', 'fecha_expiracion')
-    list_filter = ('activo', 'fecha_expiracion')
-    search_fields = ('codigo',)
+# Función para obtener el total de ventas
+def obtener_total_ventas():
+    total_ventas = Pedido.objects.filter(status='Completed').aggregate(total=Sum('pedido_total'))
+    return total_ventas['total'] or 0
 
-@admin.register(Venta)
+# Función para obtener las ventas por producto
+def obtener_ventas_por_producto():
+    ventas_por_producto = PedidoProducto.objects.values('producto__producto_nombre').annotate(total_ventas=Sum('producto_precio'))
+    return ventas_por_producto
+
+# Vista de Ventas 
 class VentaAdmin(admin.ModelAdmin):
-    list_display = ('user', 'producto', 'cantidad', 'total_venta', 'estado_pedido', 'region', 'pais', 'fecha_venta')
-    list_filter = ('fecha_venta', 'estado_pedido', 'region', 'pais')
-    search_fields = ('user__email', 'producto__producto_nombre')
+    list_display = ('producto', 'cantidad', 'total_venta', 'ventas_por_producto')
+    list_filter = ('pedido__status',)  # Filtro por estado de venta (relacionado con el modelo Pedido)
+    search_fields = ('producto__producto_nombre', 'pedido__pedido_numero')  # Permite buscar por producto o número de pedido
+    date_hierarchy = 'pedido__created_at'  # Filtro por fecha (relacionado con el modelo Pedido)
 
-    def get_urls(self):
-        urls = super().get_urls()
-        custom_urls = [
-            path('grafico/', self.admin_site.admin_view(self.grafico_view), name='ventas_grafico'),
-        ]
-        return custom_urls + urls
+    def total_venta(self, obj):
+        return obtener_total_ventas()
 
-    
-    def grafico_view(self, request):
-        ventas = Venta.objects.values('estado_pedido').annotate(total=Count('id'))
-        estados = [venta['estado_pedido'] for venta in ventas]
-        datos = [venta['total'] for venta in ventas]
-        context = {
-            'estados': estados,
-            'datos': datos,
-        }
-        #return TemplateResponse(request, 'admin/ventas/grafico.html', context)
-        return render(request, 'ventas/grafico.html')
+    def ventas_por_producto(self, obj):
+        ventas = obtener_ventas_por_producto()
+        return format_html('<br>'.join([f"{venta['producto__producto_nombre']}: {venta['total_ventas']}" for venta in ventas]))
 
+    ventas_por_producto.short_description = 'Ventas por Producto'
 
-class VentaResource(resources.ModelResource):
-    class Meta:
-        model = Venta
-        fields = ('user__email', 'producto__producto_nombre', 'cantidad', 'total_venta', 'estado_pedido', 'region', 'pais', 'fecha_venta')
+# Registrar las funciones en el admin
+admin.site.register(Venta, VentaAdmin)

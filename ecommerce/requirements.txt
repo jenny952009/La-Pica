@@ -16,4 +16,5 @@ django-ckeditor==6.2.0
 xhtml2pdf
 django-jazzmin
 django-import-export
+matplotlib
 
