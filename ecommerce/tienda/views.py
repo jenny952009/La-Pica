@@ -97,25 +97,39 @@ def search(request):
 #-----------------------------comentarios-------------------------------------------    
 # Vista para enviar una reseña  
 def agregar_reseña(request, producto_id):
- # Recupera la URL de referencia o usa una URL predeterminada si no existe
+    # Recupera la URL de referencia o usa una URL predeterminada si no existe
     url = request.META.get('HTTP_REFERER')  # Guarda la URL previa para redirigir después del procesamiento de la reseña
+
     # Verifica si la solicitud es POST (es decir, si el formulario fue enviado)
     if request.method == 'POST':
         form = ReseñaForm(request.POST)
-# Verifica que el usuario haya comprado el producto antes de permitirle enviar una reseña
+
+        # Verifica que el formulario es válido
         if form.is_valid():
-            data = ReseñaRating()   # Guarda la reseña
-            data.titulo = form.cleaned_data['titulo']
-            data.rating = form.cleaned_data['rating']
-            data.reseña= form.cleaned_data['reseña']
-            data.ip = request.META.get('REMOTE_ADDR')
-            data.producto_id = producto_id
-            data.user_id = request.user.id
-            data.save()
-         # Mensaje de éxito
-            messages.success(request, 'Tu comentario ha sido publicado. ¡Gracias!')
+            # Verifica que el campo `rating` no esté vacío
+            rating = form.cleaned_data.get('rating')
+            titulo = form.cleaned_data.get('titulo')
+            reseña = form.cleaned_data.get('reseña')
+
+            if rating and titulo and reseña:  # Asegúrate de que todos los campos estén completos
+                data = ReseñaRating()  # Guarda la reseña
+                data.titulo = titulo
+                data.rating = rating
+                data.reseña = reseña
+                data.ip = request.META.get('REMOTE_ADDR')
+                data.producto = get_object_or_404(Producto, id=producto_id)  # Obtén el producto
+                data.user = request.user
+                data.save()
+
+                # Mensaje de éxito
+                messages.success(request, 'Tu comentario ha sido publicado. ¡Gracias!')
+            else:
+                # Mensaje de error si faltan campos
+                messages.error(request, 'Por favor, completa todos los campos antes de enviar.')
         else:
-            messages.error(request, 'Por favor, rellena todos los campos antes de enviar.')            # Mensaje de error si el formulario no es válido
-        return redirect(url if url else reverse('producto_detalle', args=[producto_id])) 
+            messages.error(request, 'El formulario contiene errores. Por favor, verifica los datos ingresados.')
+
+        # Redirige a la página previa o a la página de detalle del producto
+        return redirect(url if url else reverse('producto_detalle', args=[producto_id]))
 
     return redirect('home')  # Redirigir al home

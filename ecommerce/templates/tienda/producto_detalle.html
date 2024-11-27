@@ -2,14 +2,6 @@
 
 {% block content %}
 <div class="container" style="margin-top: 50px;">
-  <!-- Mostrar mensajes de éxito o error -->
-  {% if messages %}
-      <div class="alert alert-info">
-          {% for message in messages %}
-              <p>{{ message }}</p>
-          {% endfor %}
-      </div>
-  {% endif %}
 
 <section class="section-content padding-y bg">
   <div class="container">
@@ -112,7 +104,7 @@
               <p>Para enviar un comentario debes estar registrado <span><a href="{% url 'login' %}">Inicia Sesión</a></span></p>
             {% endif %}
           </div>
-
+          <br>
           {% include 'includes/alerts.html' %}
         </form>
         <br>
