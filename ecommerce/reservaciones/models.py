@@ -34,7 +34,8 @@ class Reserva(models.Model):
     telefono = models.CharField(max_length=15)
     numero_mesa = models.IntegerField()
     fecha_reserva = models.DateTimeField(auto_now_add=True)  # Se establece al crear el objeto
-    hora_comienzo = models.TimeField()
+    hora_comienzo = models.CharField(max_length=100)
+    hora_fin = models.CharField(max_length=100)
     personas = models.IntegerField()
     dia_reserva = models.DateField(default=timezone.now)
 

@@ -35,6 +35,11 @@ def reservacion(request):
         personas = request.POST.get('personas')
         dia_reserva = request.POST.get('dia_reserva')
 
+        # Calcular la hora de fin sumando 1 hora a la hora de comienzo
+        hora_comienzo_obj = datetime.strptime(hora_comienzo, "%H:%M")
+        hora_fin_obj = hora_comienzo_obj + timedelta(hours=1)
+        hora_fin = hora_fin_obj.strftime("%H:%M")
+
         # Validación de campos vacíos
         if not nombre:
             return JsonResponse({'error': 'El nombre no puede estar vacío.'}, status=400)
@@ -74,6 +79,7 @@ def reservacion(request):
             numero_mesa=numero_mesa,
             fecha_reserva=timezone.now(),
             hora_comienzo=hora_comienzo,
+            hora_fin=hora_fin,  # Guardar la hora de fin en la base de datos
             personas=personas,
             codigo_reserva=codigo_reserva,
             dia_reserva=dia_reserva
@@ -106,44 +112,72 @@ def reservacion(request):
     return render(request, 'reservaciones/reservacion.html', {'days': days})
 
 
+
 @csrf_exempt
 def Descargar_Ticket(request):
     if request.method == 'POST':
         codigo_reserva = request.POST.get('codigo_reserva')
 
+        # Buscar la reserva por código
         reserva = Reserva.objects.filter(codigo_reserva=codigo_reserva).first()
 
         if reserva:
+            # Formatear la fecha de reserva
+            fecha_reserva_formateada = reserva.fecha_reserva.strftime('%Y-%m-%d')
+            
             html = f"""
             <html>
+            <div style="text-align: center;">
+            <img src="static/images/icons/Logo_La_Picá.png" alt="Logo del restaurante" style="width:150px;height:auto;"> <!-- Agregado: Imagen -->
+            </div>
+                    </div>
+                        <hr />
+                    </div>              
                 <head>
-                    <title>Boleta de Reserva</title>
+                    <title>Ticket de reserva</title>
+                    <link rel="stylesheet" type="text/css" href="static/css/ticket.css"> <!-- Enlace del archivo CSS a ticket.css-->
                 </head>
                 <body>
                     <h1>Detalles de la Reserva</h1>
-                    <p>Código de Reserva: {reserva.codigo_reserva}</p>
-                    <p>Nombre: {reserva.nombre}</p>
-                    <p>Apellido: {reserva.apellido}</p>
-                    <p>Email: {reserva.email}</p>
-                    <p>Teléfono: {reserva.telefono}</p>
-                    <p>Número de Mesa: {reserva.numero_mesa}</p>
-                    <p>Fecha de Reserva: {reserva.fecha_reserva}</p>
-                    <p>Hora de Comienzo: {reserva.hora_comienzo}</p>
-                    <p>Personas: {reserva.personas}</p>
-                    <p>Día de Reserva: {reserva.dia_reserva}</p>
+                    <p>Nombre del cliente: {reserva.nombre}</p>
+                    <p>Apellido del cliente: {reserva.apellido}</p>
+                    <p>Código de la Reservación : {reserva.codigo_reserva}</p>
+                    </div>
+                        <hr />
+                    </div>
+                    <p>Email del Cliente: {reserva.email}</p>
+                    <p>Teléfono del Cliente: {reserva.telefono}</p>
+                    <p>Fecha en la que se hizo la Reservación: {fecha_reserva_formateada}</p>
+                    </div>
+                        <hr />
+                    </div>
+                    <p>N. de Mesa Reservada: {reserva.numero_mesa}</p>
+                    <p>Hora de Comienzo de la Reservación de la mesa: {reserva.hora_comienzo} HRS.</p>
+                    <p>Hora de Término de la Reservación de la mesa: {reserva.hora_fin} HRS.</p>
+                    <p>N. de Personas totales de la Reserva: {reserva.personas}</p>
+                    <p>Día de la Reservación: {reserva.dia_reserva}</p>
+                    </div>
+                        <hr />
+                    </div> 
+                    <p class="text-small"> Estimado cliente, el siguiente ticket es válido hasta la fecha en la que su mesa fue reservada. No nos hacemos responsables de reclamos o devoluciones después de la fecha estimada.¡Gracias por su atención! Para más información, contáctenos a nuestro número +569 5431 9275.</p>
+                    </div>
+                        <hr />
+                    </div>                                          
                 </body>
             </html>
             """
-            
+
+            # Generar el archivo PDF
             response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = f'attachment; filename="boleta_{codigo_reserva}.pdf"'
+            response['Content-Disposition'] = 'attachment; filename="ticket_reserva.pdf"'
             pisa_status = pisa.CreatePDF(html, dest=response)
-            
+
             if pisa_status.err:
-                return JsonResponse({'error': 'Error al generar el PDF'}, status=500)
-                
+                return HttpResponse('Hubo un error al generar el PDF.')
             return response
         else:
-            return JsonResponse({'error': 'Código de reserva no encontrado.'}, status=404)
-
-    return JsonResponse({'error': 'Método no permitido.'}, status=405)
+            # Si no se encuentra la reserva, renderizar nuevamente con el error
+            return render(request, 'reservaciones/reservacion.html', {
+                'error_msg': 'Código de reserva no encontrado. Por favor, intenta nuevamente.'
+            })
+    return redirect('reservacion')  # Redirigir si no es un método POST

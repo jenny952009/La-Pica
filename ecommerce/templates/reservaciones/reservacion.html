@@ -119,6 +119,14 @@
     <div class="card mx-auto" style="max-width: 600px; margin-top: 20px;">
         <div class="card-body">
             <h4 class="card-title mb-4">Descargar Ticket de Reserva</h4>
+
+            <!-- Mostrar mensaje de error si existe -->
+            {% if error_msg %}
+            <div class="alert alert-danger" role="alert">
+                {{ error_msg }}
+            </div>
+            {% endif %}
+
             <form id="ticket-form" method="POST" action="{% url 'Descargar_Ticket' %}">
                 {% csrf_token %}
                 <div class="form-group">

@@ -1,0 +1,19 @@
+/* Estilos para el ticket de reserva */
+h1 {
+    font-size: 36px; /* Aumentar tamaño del título */
+    text-align: center;
+}
+
+p {
+    font-size: 20px; /* Aumentar tamaño del texto */
+    line-height: 1.5;
+}
+
+.info {
+    font-weight: bold;
+}
+.text-small {
+    font-size: 12px; /* Ajusta el tamaño según prefieras */
+    text-align: center; /* Alinear al centro */
+    line-height: 1.4; /* Opcional, mejora la legibilidad */
+}
