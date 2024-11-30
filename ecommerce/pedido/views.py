@@ -89,6 +89,7 @@ def place_order(request, total=0, cantidad=0):
     actual_usuario = request.user
     carrito_items = CarritoItem.objects.filter(user=actual_usuario)
     carrito_count = carrito_items.count()
+    
     # Si el carrito está vacío, redirigir a la tienda
     if carrito_count <= 0:
         return redirect('tienda')
@@ -97,23 +98,19 @@ def place_order(request, total=0, cantidad=0):
     gran_total = 0
     impuesto = 0
 
-
     # Calcular el total y la cantidad de productos
-
     for carrito_item in carrito_items:
         total += (carrito_item.producto.precio * carrito_item.cantidad)
         cantidad += carrito_item.cantidad
 
-    impuesto = round((19/100) * total, 2)
-
-    gran_total = total 
+    impuesto = round((19 / 100) * total, 2)
+    gran_total = total + impuesto  # Incluye el IVA en el total
 
     # Procesar el formulario de pedido si la solicitud es un POST
-
     if request.method == 'POST':
         form = PedidoForm(request.POST)
-
-        if form.is_valid():            # Crea un nuevo pedido con los datos del formulario
+        if form.is_valid():
+            # Crear un nuevo pedido con los datos del formulario
             data = Pedido()
             data.user = actual_usuario
             data.nombre = form.cleaned_data['nombre']
@@ -132,24 +129,19 @@ def place_order(request, total=0, cantidad=0):
             data.save()
 
             # Crear un número de pedido único basado en la fecha y el ID del pedido
-            yr=int(datetime.date.today().strftime('%Y'))
-            mt=int(datetime.date.today().strftime('%m'))
-            dt=int(datetime.date.today().strftime('%d'))
-            d = datetime.date(yr,mt,dt)
-
+            yr = int(datetime.date.today().strftime('%Y'))
+            mt = int(datetime.date.today().strftime('%m'))
+            dt = int(datetime.date.today().strftime('%d'))
+            d = datetime.date(yr, mt, dt)
             current_date = d.strftime("%Y%m%d")
             pedido_numero = current_date + str(data.id)
             data.pedido_numero = pedido_numero
             data.save()
 
-
             # Obtener el pedido y pasar al proceso de pago
-
-           
-            # Obtiene el pedido para enviarlo a la página de pago
-
             pedido = Pedido.objects.get(user=actual_usuario, is_ordered=False, pedido_numero=pedido_numero)
-        # Contexto para el template de pago
+            
+            # Contexto para el template de pago
             context = {
                 'pedido': pedido,
                 'carrito_items': carrito_items,
@@ -159,8 +151,6 @@ def place_order(request, total=0, cantidad=0):
             }
             # Redirigir al pago
             return render(request, 'pedido/pago.html', context)
-
-
         else:
             # Si el formulario no es válido, se mantiene en la página de checkout
             context = {
@@ -198,37 +188,37 @@ def pedido_completo(request):
     pedido_numero = request.GET.get('pedido_numero')
     transID = request.GET.get('pago_id')
 
-    try:        # Obtener el pedido y los productos ordenados para mostrarlos en la página de confirmación
+    try:
+        # Obtener el pedido y los productos ordenados para mostrarlos en la página de confirmación
         pedido = Pedido.objects.get(pedido_numero=pedido_numero, is_ordered=True)
         ordered_products = PedidoProducto.objects.filter(pedido_id=pedido.id)
 
         subtotal = 0
+        # Crear una lista de productos con el total calculado (precio * cantidad)
         for i in ordered_products:
-            subtotal += i.producto_precio*i.cantidad
-      
+            i.total_producto = i.producto_precio * i.cantidad  # Agregar el total del producto
+            subtotal += i.total_producto  # Sumar el total de cada producto al subtotal
+
         # Obtener el pago relacionado al pedido
         pago = Pago.objects.get(pago_id=transID)
-#----------------------------------------------
-        # Agregar URLs de reseña para cada producto ordenado
-        for producto in ordered_products:
-            producto.resena_url = reverse('agregar_reseña', args=[producto.producto_id])
- #------------------------------------------------------------                 
-     # Contexto para la plantilla 
+
+        # Calcular el total (incluyendo impuestos, si los hay)
+        total = subtotal + pedido.impuesto  # Asegúrate de que pedido.impuesto está correctamente asignado
+
+        # Contexto para la plantilla
         context = {
             'pedido': pedido,
-            'ordered_products':ordered_products,  # Ahora contiene enlaces de reseña,
+            'ordered_products': ordered_products,  # Ahora contiene el total de cada producto
             'pedido_numero': pedido.pedido_numero,
             'transID': pago.pago_id,
             'pago': pago,
             'subtotal': subtotal,
+            'total': total,  # Total con impuestos
         }
           
         return render(request, 'pedido/pedido_completo.html', context)
 
     except(Pago.DoesNotExist, Pedido.DoesNotExist):
-                # En caso de error, redirigir a la página de inicio
+        # En caso de error, redirigir a la página de inicio
         messages.error(request, 'Hubo un problema con tu pedido. Inténtalo de nuevo.')
         return redirect('home')
-    
-    
-        

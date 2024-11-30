@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block content %}
 <section class="section-content padding-y bg">
@@ -69,8 +70,8 @@
                 </td>
                 <td>
                     <div class="price-wrap">
-                        <var class="precio">${{ carrito_item.sub_total }}</var>
-                        <small class="text-muted"> ${{ carrito_item.producto.precio }} cada uno </small>
+                        <var class="precio">${{ carrito_item.sub_total|floatformat:0|default:"0"|add:""|intcomma }}</var>
+                        <small class="text-muted"> ${{ carrito_item.producto.precio|floatformat:0|default:"0"|add:""|intcomma }} c/u </small>
                     </div> <!-- price-wrap .// -->
                 </td>
 
@@ -90,19 +91,19 @@
             <div class="card-body">
                 <dl class="dlist-align">
                   <dt>Precio Total:</dt>
-                  <dd class="text-right">{{ total }}</dd>
+                  <dd class="text-right">${{ total|floatformat:0|default:"0"|add:""|intcomma }}</dd>
                 </dl>
                 <dl class="dlist-align">
                   <dt>Impuesto IVA (19%):</dt>
-                  <dd class="text-right"> {{ impuesto }}</dd>
+                  <dd class="text-right"> ${{ impuesto|floatformat:0|default:"0"|add:""|intcomma }}</dd>
                 </dl>
                 <dl class="dlist-align">
                   <dt>Total:</dt>
-                  <dd class="text-right text-dark b"><strong>{{ gran_total }}</strong></dd>
+                  <dd class="text-right text-dark b"><strong>${{ gran_total|floatformat:0|default:"0"|add:""|intcomma }}</strong></dd>
                 </dl>
                 <hr>
                 <p class="text-center mb-3">
-                    <img src="{% static './images/misc/payments.png' %}" height="26">
+                    <img src="{% static 'images/pagos.png' %}" height="26">
                 </p>
 
                 <div id="paypal-button-container"></div>

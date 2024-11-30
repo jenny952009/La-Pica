@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block content %}
 <!-- ========================= SECTION MAIN ========================= -->
@@ -34,7 +35,7 @@
 					<a href="{{ producto.get_url }}" class="img-wrap"> <img src="{{ producto.images.url }}"> </a>
 					<figcaption class="info-wrap">
 						<a href="{{ producto.get_url }}" class="title">{{producto.producto_nombre}}</a>
-						<div class="price mt-1">{{ producto.precio }}</div> <!-- price-wrap.// -->
+						<div class="price mt-1">${{ producto.precio|intcomma }}</div> <!-- price-wrap.// -->
 
 						<div class="rating-star">
 							<span>

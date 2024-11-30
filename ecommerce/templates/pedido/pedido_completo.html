@@ -1,18 +1,15 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block content %}
 <div class="container" style="margin-top: 50px;">
     <center><i class="fas fa-check-circle" style="font-size: 72px;margin-bottom: 20px;color: #28A745;"></i></center>
-    <h2 class="text-center">El pago se realizó con exito</h2>
+    <h2 class="text-center">El pago se realizó con éxito</h2>
 	<br>
     <div class="text-center">
         <a href="{% url 'tienda' %}" class="btn btn-success">Seguir comprando</a>
-        {% comment %} {% for producto in ordered_products %}  
-            <a href="{% url 'agregar_reseña' producto_id=producto.producto_id %}" class="btn btn-primary mx-2">Agregar reseña</a>
-        {% endfor %}{% endcomment %}
     </div>
-    
 </div>
 
 <div class="container" style="margin: 0 auto;width: 50%;padding: 50px;background: #f1f1f1;margin-top: 50px;margin-bottom: 50px;">
@@ -26,14 +23,14 @@
                         <!-- Start .row -->
                         <div class="col-lg-6">
                             <!-- col-lg-6 start here -->
-                            <div class="invoice-logo"><img src="{% static './images/misc/cash.jpg' %}" alt="Invoice logo" style="max-height: 40px;"></div>
+                            <div class="invoice-logo"><img src="{% static '/images/logoprincipal.png' %}" alt="Invoice logo" style="max-height: 40px;"></div>
                         </div>
                         <!-- col-lg-6 end here -->
                         <div class="col-lg-6">
                             <!-- col-lg-6 start here -->
                             <div class="invoice-from">
                                 <ul class="list-unstyled text-right">
-                                    <li><strong>Factura a nombre de:</strong></li>
+                                    <li><strong>Boleta a nombre de:</strong></li>
                                     <li>{{ pedido.nombre_completo }}</li>
                                     <li>{{ pedido.direccion_completa }}</li>
                                     <li>{{ pedido.ciudad }}, {{ pedido.region }}</li>
@@ -80,30 +77,30 @@
                                                   </p>
                                                 </td>
                                                 <td class="text-center">{{ item.cantidad }}</td>
-                                                <td class="text-center">{{ item.producto_precio }} CLP</td>
+                                                <td class="text-center">${{ item.total_producto|floatformat:0|add:""|intcomma }} CLP</td>  <!-- Cambié el precio por la cantidad multiplicada -->
                                             </tr>
                                             {% endfor %}
                                         </tbody>
                                         <tfoot>
                                             <tr>
                                                 <th colspan="2" class="text-right">Subtotal:</th>
-                                                <th class="text-center">${{ subtotal }} CLP</th>
+                                                <th class="text-center">${{ subtotal|floatformat:0|add:""|intcomma }} CLP</th>
                                             </tr>
                                             <tr>
                                                 <th colspan="2" class="text-right">Impuestos:</th>
-                                                <th class="text-center">${{ pedido.impuesto }} CLP</th>
+                                                <th class="text-center">${{ pedido.impuesto|floatformat:0|add:""|intcomma }} CLP</th>
                                             </tr>
 
                                             <tr>
                                                 <th colspan="2" class="text-right">Total:</th>
-                                                <th class="text-center">${{ pedido.pedido_total }} CLP</th>
+                                                <th class="text-center">${{ total|floatformat:0|add:""|intcomma }} CLP</th>  <!-- Modifiqué el total para mostrar el total final -->
                                             </tr>
                                         </tfoot>
                                     </table>
                                 </div>
                             </div>
                             <div class="invoice-footer mt25">
-                                <p class="text-center">Gracias por comprar con nosotros</p>
+                                <p class="text-center">¡Gracias por preferinos!</p>
                             </div>
                         </div>
                         <!-- col-lg-12 end here -->
@@ -115,6 +112,6 @@
         </div>
         <!-- col-lg-12 end here -->
     </div>
-    </div>
+</div>
 
 {% endblock %}

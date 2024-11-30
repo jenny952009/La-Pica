@@ -9,8 +9,8 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-#import pymysql
-#pymysql.install_as_MySQLdb()
+import pymysql
+pymysql.install_as_MySQLdb()
 import os
 from pathlib import Path
 
@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'suscripcion',
     #'cuenta.apps.CuentaConfig',  # Registro de la clase de configuración
     'django_extensions',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
