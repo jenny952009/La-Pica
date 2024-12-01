@@ -855,13 +855,13 @@ a[class*=card]:hover .title {
      object-fit: cover;
 }
 
-/* GRID STYLE PRODUCT ITEM */
+/*ESTILO DE CUADROS DEL MENU DE PRODUCTOS */
 .card-product-grid {
   margin-bottom: 20px;
 }
 .card-product-grid .img-wrap {
   border-radius: 0.2rem 0.2rem 0 0;
-  height: 220px;
+  height: 200px;
 }
 .card-product-grid .info-wrap {
   overflow: hidden;
@@ -1342,12 +1342,12 @@ a[class*=card]:hover .title {
 }
 
 /* ================== PAGES =================== */
-/* ================ PAGES HEADER ================== */
+/* ================ ENCABEZADO DE PÁGINA ================== */
 .section-pagetop {
   padding: 45px 0;
 }
 
-/* ================== PAGE DETAILS ==================  */
+/* ================== ESTILO DE LOS DETALLES DE LA PAGINA DEL PRODUCTO ==================  */
 .gallery-wrap .img-big-wrap {
   margin-bottom: 10px;
   border-radius: 0.37rem;
@@ -1360,8 +1360,9 @@ a[class*=card]:hover .title {
 }
 .gallery-wrap .img-big-wrap img {
   height: 450px;
-  width: auto;
+  width: 100%;
   display: inline-block;
+  
 }
 .gallery-wrap .thumbs-wrap {
   text-align: center;
