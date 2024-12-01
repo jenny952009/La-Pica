@@ -89,7 +89,7 @@ class PagoAdmin(admin.ModelAdmin):
 # Administrador de PedidoProducto
 class PedidoProductoAdmin(admin.ModelAdmin):
     list_display = [
-        'pedido', 'producto', 'cantidad', 'producto_precio', 'ordered', 'created_at', 'updated_at'
+        'user', 'producto', 'cantidad', 'producto_precio', 'ordered', 'created_at', 'updated_at'
     ]
     list_filter = ['ordered', 'created_at', 'updated_at', 'producto']  # Filtros
     search_fields = ['pedido__pedido_numero', 'producto__producto_nombre']  # Búsqueda

@@ -126,7 +126,7 @@ def login(request):
                 return redirect('dashboard')
 
         else:
-            messages.error(request, 'Los datos son incorrectos')
+            messages.error(request, 'Los datos son incorrectos, Registrese')
             return redirect('login')
 
     return render(request, 'cuenta/login.html')    

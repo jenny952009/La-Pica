@@ -254,13 +254,14 @@ JAZZMIN_SETTINGS = {
         {"name": "Soporte", "url": "https://support.example.com"},
     ],
 
-    "custom_links": {
-        "ventas": [{
-            "name": "Gráfico de Ventas",
-            "url": "admin:ventas_grafico",
-            "icon": "fas fa-chart-pie",
-        }],
-      },
+    #"custom_links": {
+       # "ventas": [{
+        #    "name": "Gráfico de Ventas",
+        #    "url": "admin:ventas_grafico",
+        #    "icon": "fas fa-chart-pie",
+        #}],
+       
+      #},
     
     #"custom_css": "static/css/custom.css",  # Puedes agregar tus propios estilos aquí.
     #"custom_js": "static/js/custom.js",    # Puedes incluir scripts personalizados aquí.

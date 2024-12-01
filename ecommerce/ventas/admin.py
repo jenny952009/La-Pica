@@ -1,3 +1,4 @@
+"""""
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import Venta  # Suponiendo que tienes un modelo Venta en ventas
@@ -32,3 +33,4 @@ class VentaAdmin(admin.ModelAdmin):
 
 # Registrar las funciones en el admin
 admin.site.register(Venta, VentaAdmin)
+"""

@@ -3,10 +3,10 @@ from django.urls import reverse
 
 # Create your models here.
 class Categoria(models.Model):
-    categoria_nombre = models.CharField(max_length=20, unique=True)
-    descripcion = models.CharField(max_length=255, blank=True)
-    slug =  models.CharField(max_length=100, unique=True)
-    cat_image =  models.ImageField(upload_to='photos/categorias', blank=True)
+    categoria_nombre = models.CharField(max_length=20, unique=True, verbose_name="Categoria")
+    descripcion = models.CharField(max_length=255, blank=True, verbose_name="Descripción")
+    slug =  models.CharField(max_length=100, unique=True, verbose_name="Slug")
+    cat_image =  models.ImageField(upload_to='photos/categorias', blank=True, verbose_name="Imagen Categoría")
 
     class Meta:
         verbose_name = 'Categoria'     # Nombre en singular
