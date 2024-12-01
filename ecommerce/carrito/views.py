@@ -113,11 +113,16 @@ def carro(request, total=0, cantidad=0, carrito_items=None):
             carro = Carrito.objects.get(carrito_id=_carrito_id(request))
             carrito_items = CarritoItem.objects.filter(carro=carro, is_active=True)
 
+        # Calcular el total y la cantidad de productos
         for carrito_item in carrito_items:
             total += (carrito_item.producto.precio * carrito_item.cantidad)
             cantidad += carrito_item.cantidad
+
+        # Calcular el impuesto (19% de IVA)
         impuesto = round((19/100) * total, 2)
-        gran_total = total 
+
+        # El total final incluye el total de productos (sin impuestos)
+        gran_total = total + impuesto  # Asegúrate de sumar el impuesto al total
 
     except ObjectDoesNotExist:
         pass
@@ -129,7 +134,6 @@ def carro(request, total=0, cantidad=0, carrito_items=None):
         'impuesto': impuesto,
         'gran_total': gran_total,
     }
-
 
     return render(request, 'tienda/carro.html', context)
 

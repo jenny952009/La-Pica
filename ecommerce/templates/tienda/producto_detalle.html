@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load humanize %}
 
 {% block content %}
 <div class="container" style="margin-top: 50px;">
@@ -41,7 +42,7 @@
               </div>
               <br>
               <div class="mb-3">
-                <var class="price h4">$ {{ single_product.precio }}</var>
+                <var class="price h4">$ {{ single_product.precio|intcomma }}</var>
               </div>
 
               <p>{{ single_product.descripcion }}</p>

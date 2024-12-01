@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block content %}
-
 
 <section class="section-content padding-y bg">
     <div class="container">
@@ -113,8 +113,8 @@
                                     </td>
                                     <td>
                                         <div class="price-wrap">
-                                            <var class="price">${{ carrito_item.sub_total }}</var>
-                                            <small class="text-muted"> ${{ carrito_item.producto.precio }} cada uno </small>
+                                            <var class="price">${{ carrito_item.sub_total|floatformat:0|intcomma }}</var>
+                                            <small class="text-muted"> ${{ carrito_item.producto.precio|floatformat:0|intcomma }} c/u </small>
                                         </div>
                                     </td>
                                 </tr>

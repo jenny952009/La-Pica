@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load humanize %}
 
 {% block content %}
 <!-- ========================= SECTION PAGETOP ========================= -->
@@ -49,13 +50,12 @@
             <figure class="card card-product-grid">
               <div class="img-wrap">
                 <a href="{{ producto.get_url }}"><img src="{{ producto.images.url }}" alt="{{ producto.producto_nombre }}"></a>
-
               </div> <!-- img-wrap.// -->
               <figcaption class="info-wrap">
                 <div class="fix-height">
                   <a href="{{ producto.get_url }}" class="title">{{producto.producto_nombre}}</a>
                   <div class="price-wrap mt-2">
-                    <span class="price">{{ producto.precio }}</span>
+                    <span class="price">${{ producto.precio|floatformat:0|intcomma }}</span>
                   </div> <!-- price-wrap.// -->
                 </div>
                 <a href="{% url 'agregar_carrito' producto.id %}" class="btn btn-block btn-success">Agregar al Carrito </a>
@@ -105,4 +105,3 @@
 </section>
 <!-- ========================= SECTION CONTENT END// ========================= -->
 {% endblock %}
-

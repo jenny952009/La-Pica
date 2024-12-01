@@ -2,6 +2,9 @@
 
 {% block content %}
 
+{% load humanize %}
+
+
 <!-- ========================= SECTION CONTENT ========================= -->
 <section class="section-content padding-y bg">
     {% include 'includes/alerts.html' %}
@@ -34,10 +37,10 @@
                                                 <th scope="row">{{ pedido.pedido_numero }}</th>
                                                 <td>{{ pedido.nombre_completo }}</td>
                                                 <td>{{ pedido.telefono }}</td>
-                                                <td>${{ pedido.pedido_total }}</td>
+                                                <td>${{ pedido.pedido_total|floatformat:0|intcomma }}</td>
                                                 <td>{{ pedido.created_at }}</td>
                                             </tr>
-                                            {% endfor %}
+                                        {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
@@ -51,5 +54,3 @@
 <!-- ========================= SECTION CONTENT END// ========================= -->
 
 {% endblock %}
-
-

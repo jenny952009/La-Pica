@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block content %}
 <section class="section-content padding-y bg">
@@ -71,8 +72,8 @@
         </td>
         <td>
             <div class="price-wrap">
-                <var class="price">${{ carrito_item.sub_total }}</var>
-                <small class="text-muted"> ${{ carrito_item.producto.precio }} cada uno </small>
+                <var class="price">${{ carrito_item.sub_total|floatformat:0|intcomma }}</var>
+                <small class="text-muted"> ${{ carrito_item.producto.precio|floatformat:0|intcomma }} c/u </small>
             </div> <!-- price-wrap .// -->
         </td>
         <td class="text-right">
@@ -92,15 +93,15 @@
             <div class="card-body">
                 <dl class="dlist-align">
                   <dt>Precio Total:</dt>
-                  <dd class="text-right">{{ total }}</dd>
+                  <dd class="text-right">${{ total|floatformat:0|intcomma }}</dd>
                 </dl>
                 <dl class="dlist-align">
                   <dt>Impuesto IVA (19%):</dt>
-                  <dd class="text-right"> {{ impuesto }}</dd>
+                  <dd class="text-right">${{ impuesto|floatformat:0|intcomma }}</dd>
                 </dl>
                 <dl class="dlist-align">
                   <dt>Total:</dt>
-                  <dd class="text-right text-dark b"><strong>{{ gran_total }}</strong></dd>
+                  <dd class="text-right text-dark b"><strong>${{ gran_total|floatformat:0|intcomma }}</strong></dd>
                 </dl>
                 <hr>
                 <p class="text-center mb-3">

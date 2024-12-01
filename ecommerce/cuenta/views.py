@@ -12,6 +12,7 @@ from django.utils.encoding import force_bytes
 from django.core.mail import EmailMessage
 from carrito.views import _carrito_id
 from carrito.models import Carrito, CarritoItem
+from datetime import datetime, timedelta
 import requests
 # Esta función maneja el registro de nuevos usuarios y envía un email de verificación.
 
@@ -58,32 +59,47 @@ def registrar(request):
     
     return render(request, 'cuenta/registrar.html', context)
 
+# Diccionario para llevar el seguimiento de intentos fallidos y bloqueo temporal
+intentos_fallidos = {}
+
 def login(request):
+    global intentos_fallidos
     if request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
 
+        # Verificar si el usuario está temporalmente bloqueado
+        if email in intentos_fallidos:
+            bloqueo = intentos_fallidos[email].get('bloqueo')
+            if bloqueo and bloqueo > datetime.now():
+                tiempo_restante = (bloqueo - datetime.now()).seconds  # Segundos restantes del bloqueo
+                messages.error(request, f'¡Demasiados intentos! Tu cuenta está bloqueada temporalmente por {tiempo_restante} segundos.')
+                return redirect('login')
+
         user = auth.authenticate(email=email, password=password)
 
         if user is not None:
-            try:                # Comprobación y actualización del carrito en caso de items previos.
+            # Restablecer los intentos fallidos si el inicio de sesión es exitoso
+            if email in intentos_fallidos:
+                del intentos_fallidos[email]
 
+            try:  # Comprobación y actualización del carrito en caso de items previos.
                 carro = Carrito.objects.get(carrito_id=_carrito_id(request))
                 is_carrito_item_exist = CarritoItem.objects.filter(carro=carro).exists()
-                
+
                 if is_carrito_item_exist:
                     carrito_item = CarritoItem.objects.filter(carro=carro)
 
                     producto_variacion = []
 
                     for item in carrito_item:
-                        variacion = item.variacion.all()  #variations en realidad
+                        variacion = item.variacion.all()
                         producto_variacion.append(list(variacion))
 
                     carrito_item = CarritoItem.objects.filter(user=user)
                     ex_var_list = []
                     id = []
-                    
+
                     for item in carrito_item:
                         existing_variation = item.variacion.all()
                         ex_var_list.append(list(existing_variation))
@@ -94,16 +110,15 @@ def login(request):
                             index = ex_var_list.index(pr)
                             item_id = id[index]
                             item = CarritoItem.objects.get(id=item_id)
-                            item.cantidad +=1
+                            item.cantidad += 1
                             item.user = user
                             item.save()
                         else:
                             carrito_item = CarritoItem.objects.filter(carro=carro)
                             for item in carrito_item:
                                 item.user = user
-                                item.save()                 
-                    
-                    
+                                item.save()
+
             except:
                 pass
 
@@ -121,10 +136,23 @@ def login(request):
                 return redirect('dashboard')
 
         else:
-            messages.error(request, 'Los datos son incorrectos')
+            # Registrar intentos fallidos
+            if email not in intentos_fallidos:
+                intentos_fallidos[email] = {'intentos': 1, 'bloqueo': None}
+            else:
+                intentos_fallidos[email]['intentos'] += 1
+
+            # Bloquear la cuenta después de 5 intentos fallidos
+            if intentos_fallidos[email]['intentos'] >= 5:
+                intentos_fallidos[email]['bloqueo'] = datetime.now() + timedelta(seconds=30)
+                messages.error(request, '¡Demasiados intentos! Tu cuenta está bloqueada temporalmente por 30 segundos.')
+            else:
+                messages.error(request, 'Los datos son incorrectos')
+
             return redirect('login')
 
-    return render(request, 'cuenta/login.html')    
+    return render(request, 'cuenta/login.html')
+
                 
 # Esta función permite cerrar sesión en el sistema y redirige al login.
                
