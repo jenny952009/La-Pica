@@ -21,6 +21,7 @@ def generar_codigo_reserva():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
 
 
+
 def reservacion(request):
     # Generar los próximos cinco días para el selector de días
     days = [(timezone.now() + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(1, 6)]
@@ -54,7 +55,7 @@ def reservacion(request):
         except ValidationError:
             return JsonResponse({'error': 'Correo electrónico no es válido.'}, status=400)
 
-        # Verificar si la mesa está ocupada para el día y hora seleccionados
+        # Verificar si la mesa ya está ocupada para el día y hora seleccionados
         reserva_existente = Reserva.objects.filter(
             numero_mesa=numero_mesa,
             dia_reserva=dia_reserva,
@@ -65,6 +66,15 @@ def reservacion(request):
             return JsonResponse({
                 'error': 'mesa_ocupada',
                 'error_msg': "¡Lo sentimos! pero la mesa que intentas reservar ya está reservada."
+            }, status=400)
+
+        # Verificar si el correo ya ha realizado una reserva, independientemente de la mesa, hora o día
+        correo_existente = Reserva.objects.filter(email=email).exists()
+
+        if correo_existente:
+            return JsonResponse({
+                'error': 'correo_existente',
+                'error_msg': "¡Lo sentimos! El correo electrónico ingresado ya ha realizado una reserva previamente."
             }, status=400)
 
         # Generar código de reserva
@@ -110,7 +120,6 @@ def reservacion(request):
 
     # Renderizar la página de reservaciones
     return render(request, 'reservaciones/reservacion.html', {'days': days})
-
 
 
 @csrf_exempt
@@ -159,7 +168,7 @@ def Descargar_Ticket(request):
                     </div>
                         <hr />
                     </div> 
-                    <p class="text-small"> Estimado cliente, el siguiente ticket es válido hasta la fecha en la que su mesa fue reservada. No nos hacemos responsables de reclamos o devoluciones después de la fecha estimada.¡Gracias por su atención! Para más información, contáctenos a nuestro número +569 5431 9275.</p>
+                    <p class="text-small"> Estimado cliente, el siguiente ticket es válido hasta la fecha en la que su mesa fue reservada. No nos hacemos responsables de reclamos o devoluciones después de la fecha estimada.¡Gracias por su atención! Para más información, contáctenos a nuestro número +569 1111 1111.</p>
                     </div>
                         <hr />
                     </div>                                          

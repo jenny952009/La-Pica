@@ -16,6 +16,13 @@
       </div>
     {% endif %}
 
+    <!-- Notificación de error por correo ya registrado -->
+    {% if request.GET.error == 'correo_existente' %}
+      <div class="container mx_auto alert alert-warning" role="alert" style="max-width: 600px; margin-top: 20px;">
+        ¡Lo sentimos! Ya has hecho una reserva anteriormente con este correo electrónico.
+      </div>
+    {% endif %}
+
     <div class="card mx-auto" style="max-width: 600px; margin-top: 50px;">
         {% include 'includes/alerts.html' %}
 
@@ -44,7 +51,8 @@
                     </div>
                     <div class="col">
                         <label for="telefono">Ingrese su número telefónico</label>
-                        <input type="tel" class="form-control" id="telefono" name="telefono" placeholder="912345678" required>
+                        <input type="tel" class="form-control" id="telefono" name="telefono" placeholder="912345678" required pattern="^\d{9}$" maxlength="9" title="El número de teléfono debe tener exactamente 9 dígitos numéricos">
+
                     </div>
                 </div>
 
@@ -103,7 +111,7 @@
 
                 <div class="form-group form-check">
                     <input type="checkbox" class="form-check-input" id="confirmar" name="confirmar" required>
-                    <label class="form-check-label" for="confirmar">Confirmar reserva</label>
+                    <label class="form-check-label" for="confirmar">Estoy de acuerdo con los términos y condiciones del servicio de la Chabelita.</label>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block">Reservar mesa</button>
@@ -145,6 +153,15 @@
     document.getElementById('reserva-form').onsubmit = async function (event) {
         event.preventDefault();  // Prevenir el envío normal del formulario
 
+        const telefono = document.getElementById('telefono').value;
+        const telefonoPattern = /^\d{9}$/;
+
+        // Validar si el número de teléfono tiene exactamente 9 dígitos
+        if (!telefonoPattern.test(telefono)) {
+            alert("Por favor, ingrese un número de teléfono válido con exactamente 9 dígitos.");
+            return;  // Detener el envío del formulario si el teléfono no es válido
+        }
+
         const formData = new FormData(this);
         const response = await fetch(this.action, {
             method: 'POST',
@@ -162,7 +179,11 @@
         } else if (data.error === 'mesa_ocupada') {
             // Redirigir en caso de error por mesa ocupada
             window.location.href = "?error=mesa_ocupada";
+        } else if (data.error === 'correo_existente') {
+            // Redirigir en caso de error por correo electrónico ya registrado
+            window.location.href = "?error=correo_existente";
         }
     };
+
 </script>
 {% endblock %}
