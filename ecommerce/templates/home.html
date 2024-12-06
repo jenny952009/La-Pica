@@ -26,15 +26,13 @@
 			<h3 class="section-title">Los menús más vendidos</h3>
 		</header><!-- sect-heading -->
 
-
 		<div class="row">
-			
 			{% for producto in productos %}
 			<div class="col-md-3">
 				<div class="card card-product-grid">
 					<a href="{{ producto.get_url }}" class="img-wrap"> <img src="{{ producto.images.url }}"> </a>
 					<figcaption class="info-wrap">
-						<a href="{{ producto.get_url }}" class="title">{{producto.producto_nombre}}</a>
+						<a href="{{ producto.get_url }}" class="title">{{ producto.producto_nombre }}</a>
 						<div class="price mt-1">${{ producto.precio|intcomma }}</div> <!-- price-wrap.// -->
 
 						<div class="rating-star">
@@ -51,19 +49,16 @@
 									aria-hidden="true"></i>
 							</span>
 						</div>
-
+						
+						<!-- Muestra la cantidad de ventas -->
+						<div class="ventas mt-2">
+							<p><strong>Ventas: </strong>{{ producto.ventas }}</p>
+						</div>
 					</figcaption>
 				</div>
 			</div> <!-- col.// -->
 			{% endfor %}
 		</div>
-		<header class="section-heading">
-			<h3 class="section-title">
-				Nuestra Ubicación
-			</h3>
-		</header>
-		
-		<!-- sect-heading -->
 	</div><!-- container // -->
 </section>
 <!-- ========================= SECTION  END// ========================= -->
@@ -74,8 +69,5 @@
 		style="border:0;box-shadow: 0 0 20px #2f4ba5;" allowfullscreen="" loading="lazy"
 		referrerpolicy="no-referrer-when-downgrade"></iframe>
 </div>
-</body>
-
-</html>
 
 {% endblock %}

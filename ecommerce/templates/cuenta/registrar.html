@@ -31,13 +31,13 @@
                     </div> <!-- form-row end.// -->
 
                     <div class="form-row">
-                      <div class="col form-group">
-                          <label>Número de celular</label>
+                        <div class="col form-group">
+                            <label>Número de celular</label>
                             {{ form.telefono }}
                             {% if form.telefono.errors %}
-                                  <div class="text-danger">{{ form.telefono.errors }}</div>
-                              {% endif %}
-                      </div> <!-- form-group end.// -->
+                                <div class="text-danger">{{ form.telefono.errors }}</div>
+                            {% endif %}
+                        </div> <!-- form-group end.// -->
                       <div class="col form-group">
                           <label>Correo electrónico</label>
                           {{ form.email }}
@@ -80,5 +80,10 @@
 </section>
 <!-- ========================= SECTION CONTENT END// ========================= -->
 
-{% endblock %}
+<script>
+    document.querySelector('input[name="telefono"]').addEventListener('input', function (e) {
+        this.value = this.value.replace(/\D/g, '').slice(0, 9); // Elimina caracteres no numéricos y limita a 9 dígitos
+    });
+</script>
 
+{% endblock %}

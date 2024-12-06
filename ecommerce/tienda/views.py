@@ -12,6 +12,7 @@ from django.urls import reverse
 #from django.shortcuts import render
 
 
+
 # Create your views here.
 def tienda(request, category_slug=None):
     categorias = None
@@ -40,6 +41,7 @@ def tienda(request, category_slug=None):
     return render(request, 'tienda/tienda.html', context)
 
 
+
 def producto_detalle(request, category_slug, product_slug):
     try:
         single_product = Producto.objects.get(categoria__slug=category_slug, slug=product_slug)
@@ -55,11 +57,9 @@ def producto_detalle(request, category_slug, product_slug):
     else:
         pedidoproducto = None
 
-
     reviews = ReseñaRating.objects.filter(producto__id=single_product.id, status=True)
 
     producto_galeria = ProductoGaleria.objects.filter(producto_id=single_product.id)
-
 
     context = {
         'single_product': single_product,
@@ -70,6 +70,7 @@ def producto_detalle(request, category_slug, product_slug):
     }
 
     return render(request, 'tienda/producto_detalle.html', context)
+
 
 # Vista de búsqueda de productos
 def search(request):

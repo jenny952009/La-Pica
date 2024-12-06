@@ -2,7 +2,7 @@ from django.shortcuts import render
 from tienda.models import Producto, ReseñaRating
 
 def home(request):
-    productos = Producto.objects.all().filter(is_available=True).order_by('created_date')
+    productos = Producto.objects.all().filter(is_available=True).order_by('-ventas')[:8]  # Limitar a los primeros 8 productos y los ordena de mayor a menor
 
     # Inicializar 'reviews' como lista vacía fuera del bucle
     reviews = []
@@ -12,7 +12,9 @@ def home(request):
 
     context = {
         'productos': productos,
-        'reviews': reviews,  # Aquí estarán todas las reseñas de todos los productos
+        'reviews': reviews,  # Aquí estarán todas las reseñas de los primeros 8 productos
     }
 
     return render(request, 'home.html', context)
+
+

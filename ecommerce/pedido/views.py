@@ -15,10 +15,11 @@ from django.urls import reverse
 
 
 
+
 def pago(request):    # Carga los datos enviados en la solicitud POST
     try:
         body = json.loads(request.body)
-            # Obtiene el pedido no confirmado para el usuario actual según el pedidoID recibido
+        # Obtiene el pedido no confirmado para el usuario actual según el pedidoID recibido
         pedido = Pedido.objects.get(user=request.user, is_ordered=False, pedido_numero=body['pedidoID'])
         # Crea un nuevo registro de pago usando los datos recibidos
         pago = Pago(
@@ -51,12 +52,15 @@ def pago(request):    # Carga los datos enviados en la solicitud POST
             # Actualiza el stock del producto en base a la cantidad comprada
             producto = Producto.objects.get(id=item.producto_id)
             producto.stock -= item.cantidad
+
+            # Sumar la cantidad comprada a la columna Ventas
+            producto.ventas += item.cantidad
             producto.save()
 
         # Vacía el carrito del usuario después de confirmar el pedido
         CarritoItem.objects.filter(user=request.user).delete()
 
-    # Envío de correo electrónico de confirmación de compra
+        # Envío de correo electrónico de confirmación de compra
         mail_subject = 'Tu compra fue realizada!'
         body = render_to_string('pedido/pedido_recibido_email.html', {
             'user': request.user,
@@ -76,7 +80,6 @@ def pago(request):    # Carga los datos enviados en la solicitud POST
             'pedido_numero': pedido.pedido_numero,
             'transID': pago.pago_id,
         }
-
 
         return JsonResponse(data)
 
