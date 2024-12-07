@@ -14,30 +14,39 @@ from carrito.views import _carrito_id
 from carrito.models import Carrito, CarritoItem
 from datetime import datetime, timedelta
 import requests
-# Esta función maneja el registro de nuevos usuarios y envía un email de verificación.
+import re
 
+
+# Esta función maneja el registro de nuevos usuarios y envía un email de verificación.
 def registrar(request):
     form = RegistrarForm()
     if request.method == 'POST':
         form = RegistrarForm(request.POST)
         if form.is_valid():
-                        # Creación de la cuenta de usuario y perfil.
+            # Validación del número de teléfono
+            telefono = form.cleaned_data['telefono']
+            if not re.match(r'^\d{9}$', telefono):  # Solo acepta 9 dígitos
+                messages.error(request, 'El número de teléfono debe tener exactamente 9 dígitos.')
+                return render(request, 'cuenta/registrar.html', {'form': form})
 
+            # Creación de la cuenta de usuario y perfil
             nombre = form.cleaned_data['nombre']
             apellido = form.cleaned_data['apellido']
-            telefono = form.cleaned_data['telefono']
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             username = email.split("@")[0]
-            user = Cuenta.objects.create_user(nombre=nombre, apellido=apellido, email=email, username=username, password=password)
+            user = Cuenta.objects.create_user(
+                nombre=nombre, apellido=apellido, email=email, username=username, password=password
+            )
             user.telefono = telefono
             user.save()
-            
+
             profile = UsuarioPerfil()
             profile.user_id = user.id
             profile.profile_picture = 'default/default-user.png'
             profile.save()
-                                   
+
+            # Envío de correo de verificación
             current_site = get_current_site(request)
             mail_subject = 'Activa tu cuenta en La Pica de la Chabelita para continuar'
             body = render_to_string('cuenta/cuenta_verificacion_email.html', {
@@ -47,16 +56,13 @@ def registrar(request):
                 'token': default_token_generator.make_token(user),
             })
             send_email = EmailMessage(mail_subject, body, to=[email])
-            send_email.send()            # Envío de correo de verificación.
+            send_email.send()
 
-
-            #messages.success(request, 'Te has registrado exitosamente. Verifica tu correo para activar tu cuenta.')
             return redirect('/cuenta/login/?command=verification&email=' + email)
 
     context = {
         'form': form
-    }  
-    
+    }
     return render(request, 'cuenta/registrar.html', context)
 
 # Diccionario para llevar el seguimiento de intentos fallidos y bloqueo temporal
