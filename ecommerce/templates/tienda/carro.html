@@ -48,27 +48,28 @@
         </td>
         <td>
             <!-- col.// -->
-                        <div class="col">
-                            <div class="input-group input-spinner">
-                                <div class="input-group-prepend">
-
-                                <a href="{% url 'remover_carrito' carrito_item.producto.id carrito_item.id %}" class="btn btn-light" type="button" id="button-plus"> <i class="fa fa-minus"></i> </a>
-                                </div>
-                                <input type="text" class="form-control"  value="{{ carrito_item.cantidad }}">
-                                <div class="input-group-append">
-
-                                  <form action="{% url 'agregar_carrito' carrito_item.producto.id %}" method="post">
-                                    {% csrf_token %}
-                                    {% for item in carrito_item.variacion.all %}
-                                      <input type="hidden" name="{{ item.variacion_categoria | lower }}" value="{{ item.variation_value | capfirst }}">
-                                    {% endfor %}
-                                    <button class="btn btn-light" type="submit" id="button-minus"> <i class="fa fa-plus"></i> </button>
-
-                                  </form>
-
-                                </div>
-                            </div> <!-- input-group.// -->
-                        </div> <!-- col.// -->
+            <div class="col">
+                <div class="input-group input-spinner">
+                    <div class="input-group-prepend">
+                        <a href="{% url 'remover_carrito' carrito_item.producto.id carrito_item.id %}" class="btn btn-light" type="button" id="button-minus"> <i class="fa fa-minus"></i> </a>
+                    </div>
+                    <input type="text" class="form-control text-center" value="{{ carrito_item.cantidad }}" readonly>
+                    <div class="input-group-append">
+                      <form action="{% url 'agregar_carrito' carrito_item.producto.id %}" method="post">
+                        {% csrf_token %}
+                        {% for item in carrito_item.variacion.all %}
+                          <input type="hidden" name="{{ item.variacion_categoria | lower }}" value="{{ item.variation_value | capfirst }}">
+                        {% endfor %}
+                        <!-- Aquí verificamos si la cantidad es igual al stock -->
+                        <button class="btn btn-light {% if carrito_item.cantidad >= carrito_item.producto.stock %}disabled{% endif %}" 
+                                type="submit" id="button-plus" 
+                                {% if carrito_item.cantidad >= carrito_item.producto.stock %}disabled{% endif %}>
+                            <i class="fa fa-plus"></i>
+                        </button>
+                      </form>
+                    </div>
+                </div> <!-- input-group.// -->
+            </div> <!-- col.// -->
         </td>
         <td>
             <div class="price-wrap">
@@ -119,6 +120,6 @@
     <!-- ============================ COMPONENT 1 END .// ================================= -->
     {% endif %}
     </div> <!-- container .//  -->
-    </section>
-    <!-- ========================= SECTION CONTENT END// ========================= -->
+</section>
+<!-- ========================= SECTION CONTENT END// ========================= -->
 {% endblock %}

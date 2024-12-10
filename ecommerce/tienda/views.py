@@ -9,38 +9,55 @@ from .forms import ReseñaForm
 from django.contrib import messages
 from pedido.models import PedidoProducto
 from django.urls import reverse
-#from django.shortcuts import render
+from django.http import JsonResponse  # Import necesario para devolver JSON
 
 
+def agregar_carrito(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    cantidad = 1  # Incremento por defecto
+    carrito_item = CarritoItem.objects.filter(carro__carrito_id=_carrito_id(request), producto=producto).first()
 
-# Create your views here.
+    if carrito_item:
+        if carrito_item.cantidad + cantidad > producto.stock:
+            messages.error(request, "No puedes agregar más productos de los disponibles en el stock.")
+        else:
+            carrito_item.cantidad += cantidad
+            carrito_item.save()
+    else:
+        if cantidad > producto.stock:
+            messages.error(request, "La cantidad excede el stock disponible.")
+        else:
+            carrito = Carrito.objects.get_or_create(carrito_id=_carrito_id(request))[0]
+            CarritoItem.objects.create(
+                producto=producto,
+                carro=carrito,
+                cantidad=cantidad
+            )
+
+    return redirect('ver_carrito')  # Cambia esto por el nombre de tu URL para el carrito
+
+# Otras vistas existentes
 def tienda(request, category_slug=None):
     categorias = None
     productos = None
 
-    if category_slug != None:
+    if category_slug is not None:
         categorias = get_object_or_404(Categoria, slug=category_slug)
-        productos = Producto.objects.filter(categoria=categorias, is_available=True).order_by('id')
-        paginator = Paginator(productos, 6)
-        page = request.GET.get('page')
-        paged_products = paginator.get_page(page)
-        producto_count = productos.count()
+        productos = Producto.objects.filter(categoria=categorias, is_available=True, stock__gt=0).order_by('id')
     else:
-        productos = Producto.objects.all().filter(is_available=True).order_by('id')
-        paginator = Paginator(productos, 6)
-        page = request.GET.get('page')
-        paged_products = paginator.get_page(page)
-        producto_count = productos.count()
-
+        productos = Producto.objects.filter(is_available=True, stock__gt=0).order_by('id')
+    
+    paginator = Paginator(productos, 6)
+    page = request.GET.get('page')
+    paged_products = paginator.get_page(page)
+    producto_count = productos.count()
 
     context = {
-        'productos' : paged_products,
-        'producto_count' : producto_count,
+        'productos': paged_products,
+        'producto_count': producto_count,
     }
 
     return render(request, 'tienda/tienda.html', context)
-
-
 
 def producto_detalle(request, category_slug, product_slug):
     try:
@@ -71,8 +88,6 @@ def producto_detalle(request, category_slug, product_slug):
 
     return render(request, 'tienda/producto_detalle.html', context)
 
-
-# Vista de búsqueda de productos
 def search(request):
     productos = []  # Inicializa la lista vacía
     producto_count = 0  # Inicializa el conteo
@@ -91,6 +106,39 @@ def search(request):
     }
 
     return render(request, 'tienda/tienda.html', context)
+
+
+def actualizar_productos(request, category_slug=None):
+    if category_slug:
+        categoria = get_object_or_404(Categoria, slug=category_slug)
+        productos = Producto.objects.filter(categoria=categoria, is_available=True, stock__gt=0).order_by('id')
+    else:
+        productos = Producto.objects.filter(is_available=True, stock__gt=0).order_by('id')
+
+    # Paginación de productos
+    paginator = Paginator(productos, 6)
+    page = request.GET.get('page')
+    paged_products = paginator.get_page(page)
+
+    # Si es una solicitud AJAX, solo devolveremos los productos (HTML parcial)
+    if request.is_ajax():
+        return render(request, 'tienda/productos_partial.html', {'productos': paged_products})
+    
+    # Si no es AJAX, simplemente devolver la respuesta normal
+    productos_data = [
+        {
+            'nombre': producto.producto_nombre,
+            'precio': producto.precio,
+            'stock': producto.stock,
+            'imagen': producto.images.url if producto.images else '',
+        }
+        for producto in productos
+    ]
+
+    return JsonResponse({'success': True, 'productos': productos_data})
+
+
+
     
     
     
