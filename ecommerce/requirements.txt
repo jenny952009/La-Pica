@@ -14,3 +14,6 @@ tzdata==2023.3
 urllib3==1.26.16
 django-ckeditor==6.2.0
 xhtml2pdf
+#pip install django-jazzmin
+#pip install django-admin-charts
+
