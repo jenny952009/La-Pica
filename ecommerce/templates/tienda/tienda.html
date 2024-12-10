@@ -43,34 +43,38 @@
             <span class="mr-md-auto"><b>{{ producto_count }}</b> Productos Encontrados</span>
           </div>
         </header>
-        <div class="row">
+        <div class="row" id="productos-list">
           {% if productos %}
           {% for producto in productos %}
-          <div class="col-md-4">
-            <figure class="card card-product-grid">
-              <div class="img-wrap">
-                <a href="{{ producto.get_url }}"><img src="{{ producto.images.url }}" alt="{{ producto.producto_nombre }}"></a>
-              </div> <!-- img-wrap.// -->
-              <figcaption class="info-wrap">
-                <div class="fix-height">
-                  <a href="{{ producto.get_url }}" class="title">{{producto.producto_nombre}}</a>
-                  <div class="price-wrap mt-2">
-                    <span class="price">${{ producto.precio|floatformat:0|intcomma }}</span>
-                  </div> <!-- price-wrap.// -->
-                </div>
-                <a href="{% url 'agregar_carrito' producto.id %}" class="btn btn-block btn-success">Agregar al Carrito </a>
-              </figcaption>
-            </figure>
-          </div> 
+            {% if producto.stock > 0 %}
+              <div class="col-md-4">
+                <figure class="card card-product-grid">
+                  <div class="img-wrap">
+                    <a href="{{ producto.get_url }}"><img src="{{ producto.images.url }}" alt="{{ producto.producto_nombre }}"></a>
+                  </div> <!-- img-wrap.// -->
+                  <figcaption class="info-wrap">
+                    <div class="fix-height">
+                      <a href="{{ producto.get_url }}" class="title">{{ producto.producto_nombre }}</a>
+                      <div class="price-wrap mt-2">
+                        <span class="price">${{ producto.precio|floatformat:0|intcomma }}</span>
+                      </div> <!-- price-wrap.// -->
+                      {% if producto.stock <= 5 %}
+                        <span class="text-danger">¡Quedan pocas unidades!</span>
+                      {% endif %}
+                    </div>
+                    <a href="{% url 'agregar_carrito' producto.id %}" class="btn btn-block btn-success">Agregar al Carrito</a>
+                  </figcaption>
+                </figure>
+              </div>
+            {% endif %}
           {% endfor %}
           {% else %}
           <div style="text-align: center; color: darkgray; font-size: small;">
-              <h2>No se han encontrado resultados para tu búsqueda</h2>
+            <h2>No se han encontrado resultados para tu búsqueda</h2>
           </div>
           {% endif %}
-        </div> 
+        </div> <!-- row.// -->
 
-          
         <nav class="mt-4" aria-label="Page navigation sample">
           {% if productos.has_other_pages %}
           <ul class="pagination">
@@ -104,4 +108,28 @@
   </div> <!-- container .//  -->
 </section>
 <!-- ========================= SECTION CONTENT END// ========================= -->
+
+<script>
+  // Función para actualizar los productos
+  function actualizarProductos() {
+    // Obtiene la página actual
+    const page = new URLSearchParams(window.location.search).get('page') || 1;
+
+    // Realiza la solicitud AJAX
+    fetch(`/tienda/?page=${page}`)
+      .then(response => response.text())
+      .then(html => {
+        // Encuentra el contenedor de productos y actualízalo con la respuesta
+        const productosContainer = document.querySelector('#productos-list');
+        const newProductosList = new DOMParser().parseFromString(html, 'text/html').querySelector('#productos-list');
+        productosContainer.innerHTML = newProductosList.innerHTML;
+      })
+      .catch(error => console.error('Error al actualizar productos:', error));
+  }
+
+  // Actualizar productos cada segundo
+  setInterval(actualizarProductos, 5000);
+</script>
+
 {% endblock %}
+

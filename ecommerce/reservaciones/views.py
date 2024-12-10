@@ -137,7 +137,7 @@ def Descargar_Ticket(request):
             html = f"""
             <html>
             <div style="text-align: center;">
-            <img src="static/images/icons/Logo_La_Picá.png" alt="Logo del restaurante" style="width:150px;height:auto;"> <!-- Agregado: Imagen -->
+            <img src="static/images/icons/Icono.jpeg" alt="Logo del restaurante" style="width:150px;height:auto;"> <!-- Agregado: Imagen -->
             </div>
                     </div>
                         <hr />
