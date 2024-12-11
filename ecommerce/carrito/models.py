@@ -12,11 +12,13 @@ class Carrito(models.Model):
 
 
 class CarritoItem(models.Model):
-    user = models.ForeignKey(Cuenta, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(Cuenta, on_delete=models.CASCADE, null=True, verbose_name="¿Activo?")
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
     carro = models.ForeignKey(Carrito, on_delete=models.CASCADE, null=True)
     cantidad = models.IntegerField()
-    is_active = models.BooleanField(default=True)
+    #is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, verbose_name="¿Activo?")
+
 
     def sub_total(self):
         return self.producto.precio * self.cantidad
