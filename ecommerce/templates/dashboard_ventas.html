@@ -2,6 +2,12 @@
 
 {% block content %}
 <h1>Estadísticas de Ventas</h1>
+<!-- Formulario para filtros -->
+<form method="get" style="margin-bottom: 20px;">
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Aplicar Filtros</button>
+</form>
+
 
 <div style="display: flex; gap: 20px;">
     <!-- Gráfico de Ventas por Estado -->

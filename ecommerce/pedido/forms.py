@@ -13,3 +13,28 @@ class PedidoForm(forms.ModelForm):
         for field in self.fields.values():
             field.required = True
 
+#---------------admin--------dashboard--------
+
+class FiltroVentasForm(forms.Form):
+    fecha_inicio = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        label="Desde",
+        required=False
+    )
+    fecha_fin = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        label="Hasta",
+        required=False
+    )
+    estado = forms.ChoiceField(
+        choices=[
+            ('', 'Todos'),
+            ('New', 'Nuevo'),
+            ('Accepted', 'Aceptado'),
+            ('Completed', 'Completado'),
+            ('Cancelled', 'Cancelado'),
+        ],
+        
+        label="Estado",
+        required=False
+    )

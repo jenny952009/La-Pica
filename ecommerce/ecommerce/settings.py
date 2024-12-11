@@ -209,7 +209,7 @@ JAZZMIN_SETTINGS = {
     ],
      # Top menu links (links at the top of the page)
     "topmenu_links": [
-        {"name": "dashboard", "url": "https://www.google.com", "permissions": ["auth.view_user"]},
+        {"name": "Dashboard", "url": "dashboard_ventas", "permissions": ["auth.view_user"]},
        # {"name": "Ventas", "url": "/admin/app/ventas/", "permissions": ["auth.view_user"]},
         {"name": "Inicio", "url": "admin:index", "permissions": ["auth.view_user"]},
         #{"name": "Reportes", "url": "reportes/ventas", "permissions": ["auth.view_user"]},

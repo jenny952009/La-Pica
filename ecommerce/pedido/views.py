@@ -1,20 +1,19 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from carrito.models import CarritoItem
-from .forms import PedidoForm
-import datetime
-from .models import Pedido, Pago, PedidoProducto
-import json
-from tienda.models import Producto
+from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
-
-from django.core.mail import send_mail
-from django.contrib import messages
 from django.urls import reverse
+from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models import Count, Sum
 
+from carrito.models import CarritoItem
+from tienda.models import Producto
+from .models import Pedido, Pago, PedidoProducto
+from .forms import PedidoForm, FiltroVentasForm
 
-
+import datetime
+import json
 
 def pago(request):    # Carga los datos enviados en la solicitud POST
     try:
@@ -183,9 +182,6 @@ def place_order(request, total=0, cantidad=0):
         
     }
     return render(request, 'tienda/checkout.html', context)
-        
-
-
     
     # Si no es un método POST, redirigir a la página de checkout
     #messages.info(request, 'Por favor, complete los datos de envío.')
@@ -233,13 +229,49 @@ def pedido_completo(request):
         return redirect('home')
 
 #----------------------------------------------------
+# Dashboard de ventas
+@staff_member_required
+def dashboard_ventas(request):
+    # Inicializar el formulario de filtro
+    form = FiltroVentasForm(request.GET or None)
+    pedidos = Pedido.objects.all()
+            
+    # Aplicar filtros si el formulario es válido
+    if form.is_valid():
+        if form.cleaned_data.get('created_at'):
+            pedidos = pedidos.filter(fecha__gte=form.cleaned_data['created_at'])
+        if form.cleaned_data.get('created_at'):
+            pedidos = pedidos.filter(fecha__lte=form.cleaned_data['created_at'])
+        if form.cleaned_data.get('status'):
+            pedidos = pedidos.filter(status=form.cleaned_data['status'])
 
-from django.shortcuts import render
-from django.db.models import Count, Sum
-from django.contrib.admin.views.decorators import staff_member_required
-from .models import Pedido, Producto
-from tienda.models import Producto
+    # Filtrar por estado, pero solo si se selecciona un estado
+        estado_seleccionado = form.cleaned_data.get('estado')
+        if estado_seleccionado and estado_seleccionado != '':
+            pedidos = pedidos.filter(status=estado_seleccionado)
 
+    # Generar datos para los gráficos
+    estados = pedidos.values('status').annotate(total=Count('id')).order_by('status')
+        
+    #productos = pedidos.values('producto__nombre').annotate(total=Sum('cantidad')).order_by('-total')[:5]
+    productos = PedidoProducto.objects.filter(pedido__in=pedidos) \
+        .values('producto__producto_nombre') \
+        .annotate(total=Sum('cantidad')) \
+        .order_by('-total')[:5]
+        
+    context = {
+        'form': form,
+        # Datos para el gráfico de ventas por estado
+        'labels_estados': [status['status'] for status in estados],
+        'data_estados': [status['total'] for status in estados],
+        # Datos para el gráfico de productos más vendidos
+        'labels_productos': [producto['producto__producto_nombre'] for producto in productos],
+        'data_productos': [producto['total'] for producto in productos],
+    }
+    return render(request, 'dashboard_ventas.html', context)
+     
+    
+"""
 @staff_member_required
 def dashboard_ventas(request):
     # Ventas por Estado
@@ -262,3 +294,6 @@ def dashboard_ventas(request):
     }
 
     return render(request, 'dashboard_ventas.html', context)
+
+#-----------------
+"""
