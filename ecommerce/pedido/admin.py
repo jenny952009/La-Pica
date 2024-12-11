@@ -26,7 +26,7 @@ class PedidoProductoInline(admin.TabularInline):
     readonly_fields = ('producto', 'cantidad', 'producto_precio', 'ordered')  # Solo lectura
     extra = 0  # Sin filas adicionales
     can_delete = False  # Deshabilita eliminación desde el inline
-    verbose_name = "Producto en el Pedido"
+    verbose_name = "Producto"
     verbose_name_plural = "Productos en el Pedido"
 
 
@@ -34,7 +34,7 @@ class PedidoProductoInline(admin.TabularInline):
 class PedidoAdmin(admin.ModelAdmin):
     list_display = [
         'pedido_numero', 'nombre_completo', 'usuario_pedido',  
-        'fotos_productos', 'telefono', 'email', 'ciudad', 'pedido_total', 'impuesto', 
+        'mostrar_imagen', 'telefono', 'email', 'ciudad', 'pedido_total', 'impuesto', 
         'status', 'estado_accion_cliente', 'is_ordered', 'created_at', 'updated_at'
     ]
     list_filter = ['status', 'is_ordered', 'created_at', 'updated_at', ProductoFilter]  # Filtro por producto
@@ -48,23 +48,20 @@ class PedidoAdmin(admin.ModelAdmin):
     usuario_pedido.short_description = 'Usuario del Pedido'
 
     # Función para mostrar los productos pedidos y sus cantidades
-    def fotos_productos(self, obj):
-        productos = obj.productos.all()  # Obtener los productos asociados al pedido
+    def mostrar_imagen(self, obj):
+        # Obtener los productos relacionados al pedido
+        productos = PedidoProducto.objects.filter(pedido=obj)
         imagenes = []
 
         for pedido_producto in productos:
-        # Asegúrate de que `images` exista en el producto y tenga una URL
-            if pedido_producto.producto.images and hasattr(pedido_producto.producto.images, 'url'):
-                imagen_url = pedido_producto.producto.images.url
-                imagenes.append(format_html(
-                    '<img src="{}" width="50" height="50" style="margin-right: 5px;"/>',
-                    imagen_url
-                ))
+            if pedido_producto.producto.images:
+                imagenes.append(format_html('<img src="{}" width="50" style="border-radius: 5px;" />', pedido_producto.producto.images.url))
 
-    # Si hay imágenes, las devuelve. Si no, muestra "Sin imágenes"
-        return format_html("".join(imagenes)) if imagenes else "Sin imágenes"
-    fotos_productos.short_description = "Fotos de Productos"
+        if imagenes:
+            return format_html(" ".join(imagenes))  # Muestra todas las imágenes de los productos en el pedido
+        return "Sin imagen"
 
+    mostrar_imagen.short_description = "Imagenes de productos"
     # Función para mostrar el estado del pedido con colores
     def estado_accion_cliente(self, obj):
         estado_colores = {
