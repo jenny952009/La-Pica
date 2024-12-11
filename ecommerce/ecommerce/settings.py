@@ -209,11 +209,13 @@ JAZZMIN_SETTINGS = {
     ],
      # Top menu links (links at the top of the page)
     "topmenu_links": [
-       # {"name": "Pedidos", "url": "/admin/app/pedido/", "permissions": ["auth.view_user"]},
+        {"name": "dashboard", "url": "https://www.google.com", "permissions": ["auth.view_user"]},
        # {"name": "Ventas", "url": "/admin/app/ventas/", "permissions": ["auth.view_user"]},
         {"name": "Inicio", "url": "admin:index", "permissions": ["auth.view_user"]},
         #{"name": "Reportes", "url": "reportes/ventas", "permissions": ["auth.view_user"]},
     ],
+    
+    "show_sidebar":True,
 
     # Set to True if you want to see the UI builder (for admin customization)
     "show_ui_builder": False,
@@ -251,14 +253,14 @@ JAZZMIN_SETTINGS = {
         {"name": "Soporte", "url": "https://support.example.com"},
     ],
 
-    #"custom_links": {
-       # "ventas": [{
-        #    "name": "Gráfico de Ventas",
-        #    "url": "admin:ventas_grafico",
-        #    "icon": "fas fa-chart-pie",
-        #}],
+    "custom_links": {
+        "pedido": [{
+            "name": "Dashboard de ventas",
+           "url": "dashboard_ventas",
+           "icon": "fas fa-chart-pie",
+        }],
        
-      #},
+      },
     
     #"custom_css": "static/css/custom.css",  # Puedes agregar tus propios estilos aquí.
     #"custom_js": "static/js/custom.js",    # Puedes incluir scripts personalizados aquí.
