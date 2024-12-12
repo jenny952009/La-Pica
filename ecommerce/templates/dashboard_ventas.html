@@ -1,60 +1,176 @@
 {% extends "admin/base_site.html" %}
 
 {% block content %}
-<h1>Estadísticas de Ventas</h1>
-<!-- Formulario para filtros -->
-<form method="get" style="margin-bottom: 20px;">
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Aplicar Filtros</button>
-</form>
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Dashboard de Ventas</h2>
 
-
-<div style="display: flex; gap: 20px;">
-    <!-- Gráfico de Ventas por Estado -->
-    <div>
-        <h2>Ventas por Estado</h2>
-        <canvas id="chartEstados" width="400" height="200"></canvas>
+    <!-- Formulario de filtro -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <form method="get" class="d-flex justify-content-between align-items-center">
+                <div class="form-group mb-0">
+                    {{ form.as_p }}
+                </div>
+                <button type="submit" class="btn btn-primary ml-3">Filtrar</button>
+            </form>
+        </div>
     </div>
 
-    <!-- Gráfico de Productos más Vendidos -->
-    <div>
-        <h2>Productos Más Vendidos</h2>
-        <canvas id="chartProductos" width="400" height="200"></canvas>
+    <!-- Fila de gráficos -->
+    <div class="row">
+        <!-- Gráfico 1: Ventas por Estado -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Ventas por Estado</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="chartEstados"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico 2: Productos Más Vendidos -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">Productos Más Vendidos</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="graficoProductos"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <div class="row">
+        <!-- Gráfico 3: Ventas por Mes -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">Ventas por Mes</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="graficoVentasMes"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico 4: Ventas por Categoría -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="card-title mb-0">Ventas por Categoría</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="graficoVentasCategoria"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Gráfico 5: Clientes Más Activos -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="card-title mb-0">Clientes Más Activos</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="graficoClientes"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico 6: Stock de Productos -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="card-title mb-0">Stock de Productos</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="graficoStock"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
+<!-- Incluir los gráficos de JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Gráfico de Ventas por Estado
+    // Gráfico 1: Ventas por Estado
     var ctxEstados = document.getElementById('chartEstados').getContext('2d');
-    new Chart(ctxEstados, {
+    var graficoEstado = new Chart(ctxEstados, {
         type: 'pie',
         data: {
             labels: {{ labels_estados|safe }},
             datasets: [{
+                label: 'Estado de los pedidos',
                 data: {{ data_estados|safe }},
-                backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)'],
-                borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)'],
-                borderWidth: 1
-            }]
-        }
-    });
-
-    // Gráfico de Productos Más Vendidos
-    var ctxProductos = document.getElementById('chartProductos').getContext('2d');
-    new Chart(ctxProductos, {
-        type: 'bar',
-        data: {
-            labels: {{ labels_productos|safe }},
-            datasets: [{
-                label: 'Cantidad Vendida',
-                data: {{ data_productos|safe }},
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe', '#ffce56', '#ff5733'],
                 borderWidth: 1
             }]
         },
         options: {
+            responsive: true
+        }
+    });
+
+    // Gráfico 2: Productos Más Vendidos (cambiado a gráfico de barras)
+    var ctx2 = document.getElementById('graficoProductos').getContext('2d');
+    var graficoProductos = new Chart(ctx2, {
+        type: 'bar',  // Cambiado de 'pie' a 'bar' para barras
+        data: {
+            labels: {{ labels_productos|safe }},
+            datasets: [{
+                label: 'Productos Más Vendidos',
+                data: {{ data_productos|safe }},
+                backgroundColor: 'rgba(234, 22, 184, 0.7)',  // Color del fondo del tooltip
+                borderColor: '#1d72b8',  // Color de borde de las barras
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,  // Asegura que el eje Y comience desde cero
+                    ticks: {
+                        stepSize: 1  // Ajuste para que los valores en el eje Y sean visibles y fáciles de leer
+                    }
+                },
+                x: {
+                    beginAtZero: true,  // Asegura que el eje X también empiece desde cero
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,  // Muestra la leyenda
+                    position: 'top' // Coloca la leyenda en la parte superior
+                }
+            }
+        }
+    });
+
+    // Gráfico 3: Ventas por Mes
+    var ctx3 = document.getElementById('graficoVentasMes').getContext('2d');
+    var graficoVentasMes = new Chart(ctx3, {
+        type: 'line',
+        data: {
+            labels: {{ labels_ventas_mes|safe }},
+            datasets: [{
+                label: 'Ventas por Mes',
+                data: {{ data_ventas_mes|safe }},
+                borderColor: '#28a745',
+                backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                fill: true,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
             scales: {
                 y: {
                     beginAtZero: true
@@ -62,5 +178,71 @@
             }
         }
     });
+
+    // Gráfico 4: Ventas por Categoría
+    var ctx4 = document.getElementById('graficoVentasCategoria').getContext('2d');
+    var graficoVentasCategoria = new Chart(ctx4, {
+        type: 'pie',
+        data: {
+            labels: {{ labels_ventas_categoria|safe }},
+            datasets: [{
+                label: 'Ventas por Categoría',
+                data: {{ data_ventas_categoria|safe }},
+                backgroundColor: ['#ff8c00', '#32cd32', '#00bfff', '#ff1493', '#8a2be2'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+
+    // Gráfico 5: Clientes Más Activos
+    var ctx5 = document.getElementById('graficoClientes').getContext('2d');
+    var graficoClientes = new Chart(ctx5, {
+        type: 'bar',
+        data: {
+            labels: {{ labels_clientes|safe }},
+            datasets: [{
+                label: 'Clientes Más Activos',
+                data: {{ data_clientes|safe }},
+                backgroundColor: '#ffc107',
+                borderColor: '#ffc107',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Gráfico 6: Stock de Productos
+    var ctx6 = document.getElementById('graficoStock').getContext('2d');
+    var graficoStock = new Chart(ctx6, {
+        type: 'bar',
+        data: {
+            labels: {{ labels_stock|safe }},
+            datasets: [{
+                label: 'Stock de Productos',
+                data: {{ data_stock|safe }},
+                backgroundColor: '#17a2b8',
+                borderColor: '#17a2b8',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
 </script>
-{% endblock %}
+{% endblock %}

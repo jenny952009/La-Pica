@@ -1,3 +1,10 @@
+from django.db.models import Sum, Count
+from django.db.models.functions import TruncDay, TruncMonth
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import render
+
+from pedido.models import Pedido, PedidoProducto
+from .forms import FiltroVentasForm  # Asegúrate de que este formulario esté definido correctamente
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib import messages
@@ -14,6 +21,7 @@ from .forms import PedidoForm, FiltroVentasForm
 
 import datetime
 import json
+
 
 def pago(request):    # Carga los datos enviados en la solicitud POST
     try:
@@ -228,37 +236,86 @@ def pedido_completo(request):
         messages.error(request, 'Hubo un problema con tu pedido. Inténtalo de nuevo.')
         return redirect('home')
 
-#----------------------------------------------------
-# Dashboard de ventas
+#------------graficos--------------------------------    
+from django.db.models import Sum, Count
+from django.db.models.functions import TruncMonth
+from django.shortcuts import render
+from .forms import FiltroVentasForm
+from .models import Pedido, PedidoProducto, Producto
+from django.utils.timezone import make_aware
+
 @staff_member_required
 def dashboard_ventas(request):
     # Inicializar el formulario de filtro
     form = FiltroVentasForm(request.GET or None)
     pedidos = Pedido.objects.all()
-            
-    # Aplicar filtros si el formulario es válido
+
+     # Aplicar filtros si el formulario es válido
     if form.is_valid():
-        if form.cleaned_data.get('created_at'):
-            pedidos = pedidos.filter(fecha__gte=form.cleaned_data['created_at'])
-        if form.cleaned_data.get('created_at'):
-            pedidos = pedidos.filter(fecha__lte=form.cleaned_data['created_at'])
-        if form.cleaned_data.get('status'):
-            pedidos = pedidos.filter(status=form.cleaned_data['status'])
+        if form.cleaned_data.get('fecha_inicio'):
+            pedidos = pedidos.filter(created_at__gte=form.cleaned_data['fecha_inicio'])
+        if form.cleaned_data.get('fecha_fin'):
+            pedidos = pedidos.filter(created_at__lte=form.cleaned_data['fecha_fin'])
+        if form.cleaned_data.get('estado'):
+            pedidos = pedidos.filter(status=form.cleaned_data['estado'])
 
-    # Filtrar por estado, pero solo si se selecciona un estado
-        estado_seleccionado = form.cleaned_data.get('estado')
-        if estado_seleccionado and estado_seleccionado != '':
-            pedidos = pedidos.filter(status=estado_seleccionado)
 
-    # Generar datos para los gráficos
+    # Gráfico 1: Ventas por estado
     estados = pedidos.values('status').annotate(total=Count('id')).order_by('status')
-        
-    #productos = pedidos.values('producto__nombre').annotate(total=Sum('cantidad')).order_by('-total')[:5]
+
+    # Gráfico 2: Productos más vendidos
     productos = PedidoProducto.objects.filter(pedido__in=pedidos) \
         .values('producto__producto_nombre') \
         .annotate(total=Sum('cantidad')) \
         .order_by('-total')[:5]
-        
+    
+    # Gráfico 3: Ventas por mes (sin usar TruncMonth, lo haremos en Python)
+    ventas_mes = pedidos.values('created_at').annotate(total=Sum('pedido_total')).order_by('created_at')
+
+    # Convertir las fechas a meses (en vez de usar TruncMonth)
+    ventas_mes_agrupadas = {}
+    for venta in ventas_mes:
+        # Convertir a un objeto datetime sin zona horaria (si aplica)
+        fecha_venta = venta['created_at'].date()
+        mes_anno = fecha_venta.strftime('%b %Y')
+        if mes_anno in ventas_mes_agrupadas:
+            ventas_mes_agrupadas[mes_anno] += venta['total']
+        else:
+            ventas_mes_agrupadas[mes_anno] = venta['total']
+
+    # Ordenar por mes y año
+    labels_ventas_mes = list(ventas_mes_agrupadas.keys())
+    data_ventas_mes = list(ventas_mes_agrupadas.values())
+    
+    # Gráfico 4: Ventas por Categoría (asumimos que Producto tiene una relación con Categoría)
+    ventas_por_categoria = PedidoProducto.objects.filter(pedido__in=pedidos) \
+        .values('producto__categoria__categoria_nombre') \
+        .annotate(total=Sum('cantidad')) \
+        .order_by('-total')
+
+    labels_ventas_categoria = [venta['producto__categoria__categoria_nombre'] for venta in ventas_por_categoria]
+    data_ventas_categoria = [venta['total'] for venta in ventas_por_categoria]
+
+    # Gráfico 5: Clientes más activos (suponemos que Cliente está relacionado con Pedido)
+    clientes_mas_activos = pedidos.values('user__nombre') \
+        .annotate(total=Count('id')) \
+        .order_by('-total')[:5]
+
+    labels_clientes = [cliente['user__nombre'] for cliente in clientes_mas_activos]
+    data_clientes = [cliente['total'] for cliente in clientes_mas_activos]
+
+    # Gráfico 6: Stock de productos
+    stock = PedidoProducto.objects.filter(pedido__in=pedidos) \
+        .values('producto__producto_nombre', 'producto__stock') \
+        .annotate(total=Sum('cantidad')) \
+        .order_by('-total')
+
+
+    # Preparar las etiquetas y los datos para el gráfico
+    labels_stock = [venta['producto__producto_nombre'] for venta in stock]  # Nombre del producto
+    data_stock = [venta['total'] for venta in stock]  # Total de la cantidad vendida
+
+    # Preparar el contexto para renderizar
     context = {
         'form': form,
         # Datos para el gráfico de ventas por estado
@@ -267,33 +324,19 @@ def dashboard_ventas(request):
         # Datos para el gráfico de productos más vendidos
         'labels_productos': [producto['producto__producto_nombre'] for producto in productos],
         'data_productos': [producto['total'] for producto in productos],
-    }
-    return render(request, 'dashboard_ventas.html', context)
-     
-    
-"""
-@staff_member_required
-def dashboard_ventas(request):
-    # Ventas por Estado
-    estados = Pedido.objects.values('status').annotate(total=Count('id')).order_by('status')
-    labels_estados = [estado['status'] for estado in estados]
-    data_estados = [estado['total'] for estado in estados]
-
-    # Productos más vendidos
-    productos_vendidos = PedidoProducto.objects.values('producto__producto_nombre') \
-        .annotate(cantidad_vendida=Count('id')) \
-        .order_by('-cantidad_vendida')[:10]  # Limitar a los 10 productos más vendidos
-    labels_productos = [producto['producto__producto_nombre'] for producto in productos_vendidos]
-    data_productos = [producto['cantidad_vendida'] for producto in productos_vendidos]
-
-    context = {
-        'labels_estados': labels_estados,
-        'data_estados': data_estados,
-        'labels_productos': labels_productos,
-        'data_productos': data_productos,
+        # Datos para el gráfico de ventas por mes
+        'labels_ventas_mes': labels_ventas_mes,
+        'data_ventas_mes': data_ventas_mes,
+        # Datos para el gráfico de ventas por categoría
+        'labels_ventas_categoria': labels_ventas_categoria,
+        'data_ventas_categoria': data_ventas_categoria,
+        # Datos para el gráfico de clientes más activos
+        'labels_clientes': labels_clientes,
+        'data_clientes': data_clientes,
+        # Datos para el gráfico de stock de productos
+        'labels_stock': labels_stock,
+        'data_stock': data_stock,
     }
 
     return render(request, 'dashboard_ventas.html', context)
 
-#-----------------
-"""
