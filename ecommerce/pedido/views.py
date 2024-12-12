@@ -2,6 +2,8 @@ from django.db.models import Sum, Count
 from django.db.models.functions import TruncDay, TruncMonth
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
+from datetime import datetime
+from django.utils import timezone
 
 from pedido.models import Pedido, PedidoProducto
 from .forms import FiltroVentasForm  # Asegúrate de que este formulario esté definido correctamente
@@ -19,7 +21,7 @@ from tienda.models import Producto
 from .models import Pedido, Pago, PedidoProducto
 from .forms import PedidoForm, FiltroVentasForm
 
-import datetime
+#import datetime
 import json
 
 
@@ -243,6 +245,7 @@ from django.shortcuts import render
 from .forms import FiltroVentasForm
 from .models import Pedido, PedidoProducto, Producto
 from django.utils.timezone import make_aware
+from django.utils import timezone
 
 @staff_member_required
 def dashboard_ventas(request):
@@ -259,8 +262,29 @@ def dashboard_ventas(request):
         if form.cleaned_data.get('estado'):
             pedidos = pedidos.filter(status=form.cleaned_data['estado'])
 
+    # Obtener la fecha de hoy con la zona horaria correcta
+    today = timezone.localdate()  # Esto devuelve solo la fecha sin la hora
+    today_start = timezone.make_aware(datetime.combine(today, datetime.min.time()))  # Inicio de hoy
+    today_end = timezone.make_aware(datetime.combine(today, datetime.max.time()))  # Fin de hoy
 
-    # Gráfico 1: Ventas por estado
+    # 1. Pedidos nuevos (compras en línea)
+    nuevos_pedidos = Pedido.objects.filter(created_at__gte=today_start, created_at__lte=today_end)
+    total_nuevos_pedidos = nuevos_pedidos.count()
+
+    # 2. Total de pedidos diarios
+    total_ventas_diarias = nuevos_pedidos.aggregate(Sum('pedido_total'))['pedido_total__sum'] or 0
+    total_ventas_diarias = int(total_ventas_diarias)
+    # 3. Total del mes en ventas
+    # Obtener el primer día del mes actual
+    hoy = timezone.localdate()  # Fecha de hoy
+    primer_dia_mes = hoy.replace(day=1)  # Primer día del mes actual
+    # Obtener las ventas del mes actual
+    ventas_mes_actual = pedidos.filter(created_at__gte=primer_dia_mes).aggregate(total_ventas=Sum('pedido_total'))
+    # Extraer el total de ventas del mes actual
+    total_ventas_mes = int(ventas_mes_actual['total_ventas'] or 0)  # Si no hay ventas, poner 0
+    
+    
+        # Gráfico 1: Ventas por estado
     estados = pedidos.values('status').annotate(total=Count('id')).order_by('status')
 
     # Gráfico 2: Productos más vendidos
@@ -310,7 +334,6 @@ def dashboard_ventas(request):
         .annotate(total=Sum('cantidad')) \
         .order_by('-total')
 
-
     # Preparar las etiquetas y los datos para el gráfico
     labels_stock = [venta['producto__producto_nombre'] for venta in stock]  # Nombre del producto
     data_stock = [venta['total'] for venta in stock]  # Total de la cantidad vendida
@@ -336,6 +359,10 @@ def dashboard_ventas(request):
         # Datos para el gráfico de stock de productos
         'labels_stock': labels_stock,
         'data_stock': data_stock,
+        'total_nuevos_pedidos': total_nuevos_pedidos,
+        'total_ventas_diarias': total_ventas_diarias,
+        'total_ventas_mes': total_ventas_mes,
+       
     }
 
     return render(request, 'dashboard_ventas.html', context)
