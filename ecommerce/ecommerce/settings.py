@@ -189,20 +189,21 @@ EMAIL_HOST_PASSWORD = 'kvfi ogry raql huzw'  # Reemplaza con tu contraseña
 
 JAZZMIN_SETTINGS = {
     "actions_sticky": True,  # Mantiene las acciones visibles al desplazarse
-    "navigation_expanded": True,  # Expande la navegación para mayor claridad
-   
+    "navigation_expanded": False,  # Expande la navegación para mayor claridad
+    "show_sidebar":True,
+
     # Welcome text on the login screen
-    "welcome_sign": "Bienvenidos al Panel de Administrador",
+    "welcome_sign": " Bienvenido al Panel de Administrador",
 
     # Logo to use for your site, must be present in static files, used for brand on top left
     "site_logo": "images/logue.ico",  # Asegúrate de que esta ruta sea válida y el archivo esté en tu directorio estático
-    # Title and header for the site
+ # Título y encabezado para el sitio
     "site_title": "Administración La Pica de la Chabelita",
     "site_header": "Panel de Administración LaPica",
     "site_brand": "La Pica de la Chabelita Restorant",
     "site_icon": "fa fa-cogs",  # Aquí puedes usar un icono de FontAwesome o uno personalizado
 
-    # Customization for the user menu links
+    # Personalización de los enlaces del menú de usuario
     "usermenu_links": [
         {"name": "Perfil", "url": "admin:auth_user_change", "permissions": ["auth.change_user"]},
         {"name": "Salir", "url": "/logout/", "permissions": ["auth.logout"]},
@@ -215,25 +216,21 @@ JAZZMIN_SETTINGS = {
         #{"name": "Reportes", "url": "reportes/ventas", "permissions": ["auth.view_user"]},
     ],
     
-    "show_sidebar":True,
-
+    
     # Set to True if you want to see the UI builder (for admin customization)
     "show_ui_builder": False,
 
     # Controls whether the navigation menu on the left side is expanded or collapsed
     "show_navigation": True,
-
-
-    # Control which apps are displayed in the sidebar (you can control the visibility of apps/modules)
+    # Controla qué aplicaciones se muestran en la barra lateral
     "hide_apps": [],  # Apps that you want to hide from the sidebar
     "show_apps": ["auth", "tienda", "carrito", "pedidos", "cuenta"],  # Visible apps
     
-    # Customize the model links and the order they appear in the sidebar
+    # Personalización del orden de las aplicaciones en la barra lateral
     "order_with_respect_to": [ "auth", "cuenta","tienda", "carrito", "pedidos"],  # Apps order
-    "actions_sticky": True,  # Mantiene las acciones visibles al desplazarse
     "navigation_expanded": True,  # Expande la navegación para mayor claridad
 
-    # Sidebar customization
+    # Personalización de iconos en la barra lateral
     "default_icon_type": "fa",  # Use FontAwesome icons
     "default_icon_color": "green",  # Set a default icon color
     "icons": {
@@ -246,21 +243,22 @@ JAZZMIN_SETTINGS = {
 
     # Footer settings
     "footer": "LaPica E-commerce - Todos los derechos reservados.",
+    # Enlaces personalizados en el pie de página (opcional)
 
     # Custom links or sections that you want to appear in the footer (optional)
-    "footer_links": [
-        {"name": "Documentación", "url": "https://docs.example.com"},
-        {"name": "Soporte", "url": "https://support.example.com"},
-    ],
+    #"footer_links": [
+    #    {"name": "Documentación", "url": "https://docs.example.com"},
+    #    {"name": "Soporte", "url": "https://support.example.com"},
+    #],
 
-    "custom_links": {
-        "pedido": [{
-            "name": "Dashboard de ventas",
-           "url": "dashboard_ventas",
-           "icon": "fas fa-chart-pie",
-        }],
+    #"custom_links": {
+    #    "pedido": [{
+    #        "name": "Dashboard de ventas",
+    #       "url": "dashboard_ventas",
+    #       "icon": "fas fa-chart-pie",
+    #    }],
        
-      },
+    #  },
     
     #"custom_css": "static/css/custom.css",  # Puedes agregar tus propios estilos aquí.
     #"custom_js": "static/js/custom.js",    # Puedes incluir scripts personalizados aquí.

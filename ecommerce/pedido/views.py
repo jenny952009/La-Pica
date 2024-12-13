@@ -246,6 +246,8 @@ from .forms import FiltroVentasForm
 from .models import Pedido, PedidoProducto, Producto
 from django.utils.timezone import make_aware
 from django.utils import timezone
+from collections import Counter
+
 
 @staff_member_required
 def dashboard_ventas(request):
@@ -259,9 +261,14 @@ def dashboard_ventas(request):
             pedidos = pedidos.filter(created_at__gte=form.cleaned_data['fecha_inicio'])
         if form.cleaned_data.get('fecha_fin'):
             pedidos = pedidos.filter(created_at__lte=form.cleaned_data['fecha_fin'])
-        if form.cleaned_data.get('estado'):
-            pedidos = pedidos.filter(status=form.cleaned_data['estado'])
-
+        #if form.cleaned_data.get('estado'):
+        #    pedidos = pedidos.filter(status=form.cleaned_data['estado'])
+        # Filtrar por estado
+        estado = form.cleaned_data.get('estado')
+        if estado and estado != 'None':
+            pedidos = pedidos.filter(status=estado)
+            
+        
     # Obtener la fecha de hoy con la zona horaria correcta
     today = timezone.localdate()  # Esto devuelve solo la fecha sin la hora
     today_start = timezone.make_aware(datetime.combine(today, datetime.min.time()))  # Inicio de hoy
@@ -285,6 +292,7 @@ def dashboard_ventas(request):
     
     
         # Gráfico 1: Ventas por estado
+    
     estados = pedidos.values('status').annotate(total=Count('id')).order_by('status')
 
     # Gráfico 2: Productos más vendidos
