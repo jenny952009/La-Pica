@@ -1,0 +1,30 @@
+Apuntes para comisión 
+
+Artefactos más importantes por Sprint
+
+Fase de Planificación
+Visión del Proyecto + 4 Pilares (4): Define la dirección y los objetivos estratégicos del proyecto.
+Historias de Usuario (11): Detallan las funcionalidades clave desde la perspectiva del usuario, fundamentales para la planificación.
+Sprint Planning (2): Organiza y prioriza tareas, marcando el inicio del desarrollo efectivo.
+Product Backlog Priorizado (18): Listado de todas las tareas necesarias organizadas según su importancia y urgencia.
+Impact Mapping (12): Relaciona las metas del proyecto con las necesidades del negocio y los usuarios.
+Sprint 1: Fase de Diseño
+Modelamiento de Base de Datos (22): Es esencial para garantizar que los datos del sistema estén organizados y accesibles.
+Mockups del Panel de Administración (25) y Mockups Página Web (26): Visualizan las interfaces principales, guiando el desarrollo de la interfaz de usuario.
+Documento Arquitectura de Software (34): Proporciona una descripción detallada de cómo se estructurará técnicamente el sistema.
+Diagrama de Casos de Uso (23): Define las interacciones entre usuarios y el sistema, asegurando cobertura funcional.
+Sprint 2: Fase de Desarrollo de Interfaz de Usuario
+Menú de Navegación (37): Elemento principal para la experiencia de usuario, conecta todas las vistas.
+Vistas de Usuario (41-49): Login, registro, carrito de compras, y buscador; funcionalidades esenciales para la operación del sistema.
+Implementación de Pasarela de Pago (57): Integra pagos seguros, fundamental para completar el flujo de compra.
+Formulario de Reservas (60): Agrega funcionalidad clave para gestionar la experiencia del cliente en el restaurante.
+Sprint 3: Fase de Desarrollo de Interfaz de Administración
+Conexión y Poblado de Base de Datos (71-72): Garantiza que el sistema administre y actualice información de manera eficiente.
+CRUDs Administrativos (77-88): Gestión completa de cuentas, productos, reservas y más, fundamentales para el control operativo.
+Arquitectura MVT (91): Establece la estructura técnica base para la interacción entre modelo, vista y plantilla.
+Variación de Stock (86): Gestión en tiempo real del inventario, esencial para el éxito del negocio.
+Sprint 4: Fase de Implementación y Cierre
+Casos de Pruebas y Plan de Pruebas (95-96): Validan que el sistema cumple con los requerimientos definidos.
+Burndown Chart (102): Monitorea el progreso hacia la finalización del proyecto.
+Manual de Usuario (100): Asegura que los administradores y usuarios comprendan cómo operar el sistema.
+Release (103): Marca la entrega oficial y aprobación del cliente, concluyendo el ciclo de desarrollo.
