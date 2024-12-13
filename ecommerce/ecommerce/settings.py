@@ -183,9 +183,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'cat20pam@gmail.com'  # Reemplaza con tu correo
-EMAIL_HOST_PASSWORD = 'kvfi ogry raql huzw'  # Reemplaza con tu contraseña
 
+EMAIL_HOST_USER = 'lapicadelachabelita1234@gmail.com'  # Reemplaza con tu correo
+EMAIL_HOST_PASSWORD = 'vcll cinn xobm cqlu'  # Reemplaza con tu contraseña
 
 JAZZMIN_SETTINGS = {
     "actions_sticky": True,  # Mantiene las acciones visibles al desplazarse
@@ -210,9 +210,7 @@ JAZZMIN_SETTINGS = {
      # Top menu links (links at the top of the page)
     "topmenu_links": [
         {"name": "dashboard", "url": "https://www.google.com", "permissions": ["auth.view_user"]},
-       # {"name": "Ventas", "url": "/admin/app/ventas/", "permissions": ["auth.view_user"]},
         {"name": "Inicio", "url": "admin:index", "permissions": ["auth.view_user"]},
-        #{"name": "Reportes", "url": "reportes/ventas", "permissions": ["auth.view_user"]},
     ],
     
     "show_sidebar":True,
@@ -262,8 +260,8 @@ JAZZMIN_SETTINGS = {
        
       },
     
-    #"custom_css": "static/css/custom.css",  # Puedes agregar tus propios estilos aquí.
-    #"custom_js": "static/js/custom.js",    # Puedes incluir scripts personalizados aquí.
+   
 }
+
 
 
