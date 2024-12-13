@@ -200,7 +200,7 @@ JAZZMIN_SETTINGS = {
      # Top menu links (links at the top of the page)
     "topmenu_links": [
         {"name": "Dashboard", "url": "dashboard_ventas", "permissions": ["auth.view_user"]},
-        {"name": "Inicio", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "Ir a la Pica de la Chabelita", "url": "home", "permissions": ["auth.view_user"]},       
        
 
     ],
