@@ -137,7 +137,7 @@
         }
 
 
-        var monto = "{{ gran_total }}"
+        var monto = "{{ gran_total_formatted }}";  // Usar el valor formateado sin decimales
         var url = "{% url 'pago' %}"
         var csrftoken = getCookie('csrftoken');
         var pedidoID = "{{ pedido.pedido_numero }}"

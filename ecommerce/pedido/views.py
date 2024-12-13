@@ -109,6 +109,9 @@ def place_order(request, total=0, cantidad=0):
     impuesto = round((19 / 100) * total, 2)
     gran_total = total + impuesto  # Incluye el IVA en el total
 
+# formateado como un número entero sin decimales
+    gran_total_formatted = "{:.0f}".format(gran_total)  # Convertir a string sin decimales
+    
     # Procesar el formulario de pedido si la solicitud es un POST
     if request.method == 'POST':
         form = PedidoForm(request.POST)
@@ -151,6 +154,8 @@ def place_order(request, total=0, cantidad=0):
                 'total': total,
                 'impuesto': impuesto,
                 'gran_total': gran_total,
+                'gran_total_formatted': gran_total_formatted,  # Pasamos el total sin decimales
+
             }
             # Redirigir al pago
             return render(request, 'pedido/pago.html', context)
@@ -175,9 +180,10 @@ def place_order(request, total=0, cantidad=0):
         'total': total,
         'impuesto': impuesto,
         'gran_total': gran_total,
+        
     }
     return render(request, 'tienda/checkout.html', context)
-
+        
 
 
     
@@ -225,3 +231,34 @@ def pedido_completo(request):
         # En caso de error, redirigir a la página de inicio
         messages.error(request, 'Hubo un problema con tu pedido. Inténtalo de nuevo.')
         return redirect('home')
+
+#----------------------------------------------------
+
+from django.shortcuts import render
+from django.db.models import Count, Sum
+from django.contrib.admin.views.decorators import staff_member_required
+from .models import Pedido, Producto
+from tienda.models import Producto
+
+@staff_member_required
+def dashboard_ventas(request):
+    # Ventas por Estado
+    estados = Pedido.objects.values('status').annotate(total=Count('id')).order_by('status')
+    labels_estados = [estado['status'] for estado in estados]
+    data_estados = [estado['total'] for estado in estados]
+
+    # Productos más vendidos
+    productos_vendidos = PedidoProducto.objects.values('producto__producto_nombre') \
+        .annotate(cantidad_vendida=Count('id')) \
+        .order_by('-cantidad_vendida')[:10]  # Limitar a los 10 productos más vendidos
+    labels_productos = [producto['producto__producto_nombre'] for producto in productos_vendidos]
+    data_productos = [producto['cantidad_vendida'] for producto in productos_vendidos]
+
+    context = {
+        'labels_estados': labels_estados,
+        'data_estados': data_estados,
+        'labels_productos': labels_productos,
+        'data_productos': data_productos,
+    }
+
+    return render(request, 'dashboard_ventas.html', context)

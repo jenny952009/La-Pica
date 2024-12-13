@@ -1,28 +1,75 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
 from .models import Cuenta, UsuarioPerfil
+from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
 
-
+# Administrador de Cuenta
 class CuentaAdmin(UserAdmin):
-    list_display = ('email', 'nombre', 'apellido', 'username', 'last_login', 'date_joined', 'is_active')
-    list_display_link = ('email', 'nombre', 'apellido')
-    readonly_fields = ('last_login', 'date_joined')
-    ordering = ('-date_joined',)
+    # Asegúrate de incluirlas como campos de solo lectura
+    readonly_fields = ('date_joined', 'last_login')
+    # Campos que se mostrarán en la lista de usuarios
+    list_display = [
+        'email', 'nombre_completo', 'telefono', 'is_active', 'is_staff', 'is_admin', 'date_joined', 'last_login'
+    ]
+    # Filtros por estado de usuario y fecha
+    list_filter = ['is_active', 'is_staff', 'is_admin', 'date_joined']
+    # Búsqueda por correo electrónico, nombre completo y username
+    search_fields = ['email', 'nombre', 'apellido', 'username']
+    # Paginación de 20 elementos por página
+    list_per_page = 20
+    # Campos editables en el formulario de usuario
+    fieldsets = (
+        (None, {'fields': ('email', 'username', 'password')}),
+        ('Información personal', {'fields': ('nombre', 'apellido', 'telefono')}),
+        ('Permisos', {'fields': ('is_active', 'is_staff', 'is_admin', 'is_superadmin', 'groups', 'user_permissions')}),  # Los permisos
+        ('Fechas', {'fields': ('date_joined', 'last_login')}),  # Mostrar las fechas
+    )
+    
+    filter_horizontal = ('groups', 'user_permissions')  # Para permitir múltiples selecciones
 
-    filter_horizontal = ()
-    list_filter = ()
-    fieldsets = ()
+    # Campos que se mostrarán en el formulario de edición de usuario
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'username', 'password1', 'password2', 'nombre', 'apellido', 'telefono', 'is_active', 'is_staff', 'is_admin')}
+        ),
+    )
+    # Función para mostrar el nombre completo del usuario
+    def nombre_completo(self, obj):
+        return obj.nombre_completo()
+    nombre_completo.short_description = 'Nombre Completo'
 
-
+# Administrador de UsuarioPerfil
 class UsuarioPerfilAdmin(admin.ModelAdmin):
-    def thumbnail(self, object):
-            return format_html('<img src="{}" width="30" style="border-radius:50%;">'.format(object.profile_picture.url))
-      
-    thumbnail.short_description = "Imagen de perfil"
-    list_display = ('thumbnail', 'user', 'ciudad', 'region', 'pais')
+    # Campos que se mostrarán en la lista de perfiles
+    list_display = ['user', 'direccion_completa', 'ciudad', 'region', 'pais', 'profile_picture_preview']
+    # Filtros por ciudad y país
+    list_filter = ['user__email', 'user__username']
+    # Búsqueda por nombre de usuario y correo electrónico
+    search_fields = ['user__username', 'user__email', 'ciudad', 'pais']
+    # Paginación de 20 elementos por página
+    list_per_page = 20
+    # Campos del formulario de edición
+    fieldsets = (
+        ('Información de la cuenta', {'fields': ('user',)}),
+        ('Dirección', {'fields': ('direccion_1', 'direccion_2', 'ciudad', 'region', 'pais')}),
+        ('Imagen de perfil', {'fields': ('profile_picture',)}),
+    )
 
+    # Función para mostrar la dirección completa del usuario
+    def direccion_completa(self, obj):
+        return obj.direccion_completa()
+    direccion_completa.short_description = 'Dirección Completa'
 
-# Register your models here.
-admin.site.register(Cuenta, CuentaAdmin)
-admin.site.register(UsuarioPerfil, UsuarioPerfilAdmin)
+    # Previsualización de la imagen de perfil
+    def profile_picture_preview(self, obj):
+        if obj.profile_picture:
+                return format_html('<img src="{}" style="width: 50px; height: 50px; border-radius: 25px;" />'.format(obj.profile_picture.url))
+        return format_html('<img src="/static/default-avatar.png" style="width: 50px; height: 50px; border-radius: 25px;" />')
+       #    return format_html(f'<img src="{obj.profile_picture.url}" style="width: 50px; height: 50px; border-radius: 25px;" />')
+       # return "Sin imagen"
+    profile_picture_preview.short_description = "Imagen de perfil"
+
+# Registrar los modelos en el admin
+admin.site.register(Cuenta, CuentaAdmin)  # Registro de Cuenta con su admin
+admin.site.register(UsuarioPerfil, UsuarioPerfilAdmin)  # Registro de UsuarioPerfil

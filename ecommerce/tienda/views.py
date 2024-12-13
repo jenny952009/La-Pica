@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Producto, ReseñaRating, ProductoGaleria
 from categoria.models import Categoria
-from carrito.models import CarritoItem
+from carrito.models import Carrito, CarritoItem
 from carrito.views import _carrito_id
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
