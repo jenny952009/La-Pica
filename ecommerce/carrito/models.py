@@ -16,11 +16,10 @@ class CarritoItem(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
     carro = models.ForeignKey(Carrito, on_delete=models.CASCADE, null=True)
     cantidad = models.IntegerField()
-    #is_active = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True, verbose_name="¿Activo?")
 
 
-    def sub_total(self):
+    def sub_total(self):    
         return self.producto.precio * self.cantidad
 
    
