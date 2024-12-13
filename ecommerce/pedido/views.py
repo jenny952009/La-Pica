@@ -1,19 +1,28 @@
+from django.db.models import Sum, Count
+from django.db.models.functions import TruncDay, TruncMonth
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import render
+from datetime import datetime
+from django.utils import timezone
+
+from pedido.models import Pedido, PedidoProducto
+from .forms import FiltroVentasForm  # Asegúrate de que este formulario esté definido correctamente
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from carrito.models import CarritoItem
-from .forms import PedidoForm
-import datetime
-from .models import Pedido, Pago, PedidoProducto
-import json
-from tienda.models import Producto
+from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
-
-from django.core.mail import send_mail
-from django.contrib import messages
 from django.urls import reverse
+from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models import Count, Sum
 
+from carrito.models import CarritoItem
+from tienda.models import Producto
+from .models import Pedido, Pago, PedidoProducto
+from .forms import PedidoForm, FiltroVentasForm
 
+#import datetime
+import json
 
 
 def pago(request):    # Carga los datos enviados en la solicitud POST
@@ -183,9 +192,6 @@ def place_order(request, total=0, cantidad=0):
         
     }
     return render(request, 'tienda/checkout.html', context)
-        
-
-
     
     # Si no es un método POST, redirigir a la página de checkout
     #messages.info(request, 'Por favor, complete los datos de envío.')
@@ -232,33 +238,123 @@ def pedido_completo(request):
         messages.error(request, 'Hubo un problema con tu pedido. Inténtalo de nuevo.')
         return redirect('home')
 
-#----------------------------------------------------
-
+#------------graficos--------------------------------    
+from django.db.models import Sum, Count
+from django.db.models.functions import TruncMonth
 from django.shortcuts import render
-from django.db.models import Count, Sum
-from django.contrib.admin.views.decorators import staff_member_required
-from .models import Pedido, Producto
-from tienda.models import Producto
+from .forms import FiltroVentasForm
+from .models import Pedido, PedidoProducto, Producto
+from django.utils.timezone import make_aware
+from django.utils import timezone
+from collections import Counter
+
 
 @staff_member_required
 def dashboard_ventas(request):
-    # Ventas por Estado
-    estados = Pedido.objects.values('status').annotate(total=Count('id')).order_by('status')
-    labels_estados = [estado['status'] for estado in estados]
-    data_estados = [estado['total'] for estado in estados]
+    # Inicializar el formulario de filtro
+    form = FiltroVentasForm(request.GET or None)
+    pedidos = Pedido.objects.all()
 
-    # Productos más vendidos
-    productos_vendidos = PedidoProducto.objects.values('producto__producto_nombre') \
-        .annotate(cantidad_vendida=Count('id')) \
-        .order_by('-cantidad_vendida')[:10]  # Limitar a los 10 productos más vendidos
-    labels_productos = [producto['producto__producto_nombre'] for producto in productos_vendidos]
-    data_productos = [producto['cantidad_vendida'] for producto in productos_vendidos]
+     # Aplicar filtros si el formulario es válido
+    if form.is_valid():
+        if form.cleaned_data.get('fecha_inicio'):
+            pedidos = pedidos.filter(created_at__gte=form.cleaned_data['fecha_inicio'])
+        if form.cleaned_data.get('fecha_fin'):
+            pedidos = pedidos.filter(created_at__lte=form.cleaned_data['fecha_fin'])
+        #if form.cleaned_data.get('estado'):
+        #    pedidos = pedidos.filter(status=form.cleaned_data['estado'])
+        # Filtrar por estado
+        estado = form.cleaned_data.get('estado')
+        if estado and estado != 'None':
+            pedidos = pedidos.filter(status=estado)
+            
+        
+    # Obtener la fecha de hoy con la zona horaria correcta
+    today = timezone.localdate()  # Esto devuelve solo la fecha sin la hora
+    today_start = timezone.make_aware(datetime.combine(today, datetime.min.time()))  # Inicio de hoy
+    today_end = timezone.make_aware(datetime.combine(today, datetime.max.time()))  # Fin de hoy
 
+    # 1. Pedidos nuevos (compras en línea)
+    nuevos_pedidos = Pedido.objects.filter(created_at__gte=today_start, created_at__lte=today_end)
+    total_nuevos_pedidos = nuevos_pedidos.count()
+
+    # 2. Total de pedidos diarios
+    total_ventas_diarias = nuevos_pedidos.aggregate(Sum('pedido_total'))['pedido_total__sum'] or 0
+    total_ventas_diarias = int(total_ventas_diarias)
+    # 3. Total del mes en ventas
+    # Obtener el primer día del mes actual
+    hoy = timezone.localdate()  # Fecha de hoy
+    primer_dia_mes = hoy.replace(day=1)  # Primer día del mes actual
+    # Obtener las ventas del mes actual
+    ventas_mes_actual = pedidos.filter(created_at__gte=primer_dia_mes).aggregate(total_ventas=Sum('pedido_total'))
+    # Extraer el total de ventas del mes actual
+    total_ventas_mes = int(ventas_mes_actual['total_ventas'] or 0)  # Si no hay ventas, poner 0
+    
+    
+        # Gráfico 1: Ventas por estado
+    
+    estados = pedidos.values('status').annotate(total=Count('id')).order_by('status')
+
+    # Gráfico 2: Productos más vendidos
+    productos = PedidoProducto.objects.filter(pedido__in=pedidos) \
+        .values('producto__producto_nombre') \
+        .annotate(total=Sum('cantidad')) \
+        .order_by('-total')[:5]
+    
+    # Gráfico 3: Ventas por mes (sin usar TruncMonth, lo haremos en Python)
+    ventas_mes = pedidos.values('created_at').annotate(total=Sum('pedido_total')).order_by('created_at')
+
+    # Convertir las fechas a meses (en vez de usar TruncMonth)
+    ventas_mes_agrupadas = {}
+    for venta in ventas_mes:
+        # Convertir a un objeto datetime sin zona horaria (si aplica)
+        fecha_venta = venta['created_at'].date()
+        mes_anno = fecha_venta.strftime('%b %Y')
+        if mes_anno in ventas_mes_agrupadas:
+            ventas_mes_agrupadas[mes_anno] += venta['total']
+        else:
+            ventas_mes_agrupadas[mes_anno] = venta['total']
+
+    # Ordenar por mes y año
+    labels_ventas_mes = list(ventas_mes_agrupadas.keys())
+    data_ventas_mes = list(ventas_mes_agrupadas.values())
+    
+    # Gráfico 4: Ventas por Categoría (asumimos que Producto tiene una relación con Categoría)
+    ventas_por_categoria = PedidoProducto.objects.filter(pedido__in=pedidos) \
+        .values('producto__categoria__categoria_nombre') \
+        .annotate(total=Sum('cantidad')) \
+        .order_by('-total')
+
+    labels_ventas_categoria = [venta['producto__categoria__categoria_nombre'] for venta in ventas_por_categoria]
+    data_ventas_categoria = [venta['total'] for venta in ventas_por_categoria]
+
+    # Gráfico 5: Stock de productos (integración con app tienda)
+    productos_stock = Producto.objects.all()
+    labels_stock = [producto.producto_nombre for producto in productos_stock]
+    data_stock = [producto.stock for producto in productos_stock]
+ 
+    # Preparar el contexto para renderizar
     context = {
-        'labels_estados': labels_estados,
-        'data_estados': data_estados,
-        'labels_productos': labels_productos,
-        'data_productos': data_productos,
+        'form': form,
+        # Datos para el gráfico de ventas por estado
+        'labels_estados': [status['status'] for status in estados],
+        'data_estados': [status['total'] for status in estados],
+        # Datos para el gráfico de productos más vendidos
+        'labels_productos': [producto['producto__producto_nombre'] for producto in productos],
+        'data_productos': [producto['total'] for producto in productos],
+        # Datos para el gráfico de ventas por mes
+        'labels_ventas_mes': labels_ventas_mes,
+        'data_ventas_mes': data_ventas_mes,
+        # Datos para el gráfico de ventas por categoría
+        'labels_ventas_categoria': labels_ventas_categoria,
+        'data_ventas_categoria': data_ventas_categoria,
+       
+        'total_nuevos_pedidos': total_nuevos_pedidos,
+        'total_ventas_diarias': total_ventas_diarias,
+        'total_ventas_mes': total_ventas_mes,
+        'labels_stock': labels_stock,
+        'data_stock': data_stock,
     }
 
     return render(request, 'dashboard_ventas.html', context)
+

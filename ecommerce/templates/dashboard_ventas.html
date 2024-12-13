@@ -1,54 +1,290 @@
 {% extends "admin/base_site.html" %}
 
+{% load static %}
+
 {% block content %}
-<h1>Estadísticas de Ventas</h1>
+<!-- Contenedor principal -->
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Dashboard La Pica de la Chabelita</h1>
+       <!-- Filtro de datos -->
 
-<div style="display: flex; gap: 20px;">
-    <!-- Gráfico de Ventas por Estado -->
-    <div>
-        <h2>Ventas por Estado</h2>
-        <canvas id="chartEstados" width="400" height="200"></canvas>
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Ventas por Estado</h6>
+                </div>  
+       
+
+<div class="container mt-4">
+
+    <h2 class="text-center mb-4">Dashboard de Ventas</h2>
+    <!-- Content Row -->
+    <div class="container-fluid">
+        <!-- Tarjetas informativas -->
+        <!-- Pedidos Nuevos -->
+        <div class="row">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Pedidos Nuevos Hoy</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">Total pedidos nuevos: {{ total_nuevos_pedidos }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-box fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ventas Diarias -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Total Ventas Diarias</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">Total ventas hoy:$ {{ total_ventas_diarias }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ventas Totales Mensuales -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Ventas Totales Mensuales</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">Total ventas este mes:$ {{ total_ventas_mes }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+                <!-- Contenido adicional -->
+        <div class="row">
+            <div class="col-xl-12 col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Gráficos y Análisis</h6>
+                    </div> 
+                    
+                    
+ <!-- Formulario de filtro-->
+   
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <form method="get" class="d-flex justify-content-between align-items-center">
+                <div class="form-group mb-0">
+                   <label for="{{ form.fecha_inicio.id_for_label }}">Desde:</label>
+                  {{ form.fecha_inicio }}
+                </div>
+                <div class="form-group mb-0">
+                    <label for="{{ form.fecha_fin.id_for_label }}">Hasta:</label>
+                    {{ form.fecha_fin }}
+                </div>
+                <div class="form-group mb-0">
+                    <label for="{{ form.estado.id_for_label }}">Estado:</label>
+                    {{ form.estado }}
+                </div>
+                <button type="submit" class="btn btn-primary ml-3">Filtrar</button>
+            </form>
     </div>
+  
+    
+        <!-- Gráfico 1: Productos Más Vendidos -->
+        <div class="col-xl-6 col-lg-6 col-md-12 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">Productos Más Vendidos</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="graficoProductos"></canvas>
+                </div>
+            </div>
+        </div>
+    
 
-    <!-- Gráfico de Productos más Vendidos -->
-    <div>
-        <h2>Productos Más Vendidos</h2>
-        <canvas id="chartProductos" width="400" height="200"></canvas>
+        <!-- Gráfico 2: Ventas por Mes -->
+        <div class="col-xl-6 col-lg-6 col-md-12 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">Ventas por Mes</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="graficoVentasMes"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <form method="get" class="d-flex justify-content-between align-items-center">
+                <div class="form-group mb-0">
+                   <label for="{{ form.fecha_inicio.id_for_label }}">Desde:</label>
+                  {{ form.fecha_inicio }}
+                </div>
+                <div class="form-group mb-0">
+                    <label for="{{ form.fecha_fin.id_for_label }}">Hasta:</label>
+                    {{ form.fecha_fin }}
+                </div>
+                <div class="form-group mb-0">
+                    <label for="{{ form.estado.id_for_label }}">Estado:</label>
+                    {{ form.estado }}
+                </div>
+                <button type="submit" class="btn btn-primary ml-3">Filtrar</button>
+            </form>
+    </div>
+  
+    <!-- Fila de gráficos -->
+    {% comment %} <div class="row"> {% endcomment %}
+        <!-- Gráfico 3: Ventas por Estado -->
+        <div class="col-xl-6 col-lg-6 col-md-12 mb-4">
+           <div class="card shadow-sm">
+               <div class="card-header bg-primary text-white"><!-- Gráfico 1: Ventas por Estado -->
+                    <h5 class="card-title mb-0">Ventas por Estado</h5>
+               </div>
+               <div class="card-body">
+                   <canvas id="chartEstados"></canvas>
+               </div>
+           </div>
+       </div>
+
+        <!-- Gráfico 4: Ventas por Categoría -->
+        <div class="col-xl-6 col-lg-6 col-md-12 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="card-title mb-0">Ventas por Categoría</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="graficoVentasCategoria"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+<!-- Gráfico de stock de productos -->
+{% comment %} <div class="row"> {% endcomment %}
+    <div class="col-xl-12 col-lg-12 col-md-12 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="card-title mb-0">Stock de Productos</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="stockChart" width="400" height="200"></canvas>
+            </div>
+        </div>
     </div>
 </div>
-
+<!-- Incluir los gráficos de JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Gráfico de Ventas por Estado
-    var ctxEstados = document.getElementById('chartEstados').getContext('2d');
-    new Chart(ctxEstados, {
-        type: 'pie',
-        data: {
-            labels: {{ labels_estados|safe }},
-            datasets: [{
-                data: {{ data_estados|safe }},
-                backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)'],
-                borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)'],
-                borderWidth: 1
-            }]
-        }
-    });
-
-    // Gráfico de Productos Más Vendidos
-    var ctxProductos = document.getElementById('chartProductos').getContext('2d');
-    new Chart(ctxProductos, {
+    const ctxStock = document.getElementById('stockChart').getContext('2d');
+    new Chart(ctxStock, {
         type: 'bar',
         data: {
-            labels: {{ labels_productos|safe }},
+            labels: {{ labels_stock|safe }},
             datasets: [{
-                label: 'Cantidad Vendida',
-                data: {{ data_productos|safe }},
+                label: 'Stock Disponible',
+                data: {{ data_stock|safe }},
                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1
             }]
         },
         options: {
+            responsive: true,
+            scales: {
+                x: { beginAtZero: true },
+                y: { beginAtZero: true }
+            }
+        }
+    });
+    // Gráfico 1: Ventas por Estado
+    var ctxEstados = document.getElementById('chartEstados').getContext('2d');
+    var graficoEstado = new Chart(ctxEstados, {
+        type: 'pie',
+        data: {
+            labels: {{ labels_estados|safe }},
+            datasets: [{
+                label: 'Estado de los pedidos',
+                data: {{ data_estados|safe }},
+                backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe', '#ffce56', '#ff5733'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+
+    // Gráfico 2: Productos Más Vendidos (cambiado a gráfico de barras)
+    var ctx2 = document.getElementById('graficoProductos').getContext('2d');
+    var graficoProductos = new Chart(ctx2, {
+        type: 'bar',  // Cambiado de 'pie' a 'bar' para barras
+        data: {
+            labels: {{ labels_productos|safe }},
+            datasets: [{
+                label: 'Productos Más Vendidos',
+                data: {{ data_productos|safe }},
+                backgroundColor: 'rgba(234, 22, 184, 0.7)',  // Color del fondo del tooltip
+                borderColor: '#1d72b8',  // Color de borde de las barras
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,  // Asegura que el eje Y comience desde cero
+                    ticks: {
+                        stepSize: 1  // Ajuste para que los valores en el eje Y sean visibles y fáciles de leer
+                    }
+                },
+                x: {
+                    beginAtZero: true,  // Asegura que el eje X también empiece desde cero
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,  // Muestra la leyenda
+                    position: 'top' // Coloca la leyenda en la parte superior
+                }
+            }
+        }
+    });
+
+    // Gráfico 3: Ventas por Mes
+    var ctx3 = document.getElementById('graficoVentasMes').getContext('2d');
+    var graficoVentasMes = new Chart(ctx3, {
+        type: 'line',
+        data: {
+            labels: {{ labels_ventas_mes|safe }},
+            datasets: [{
+                label: 'Ventas por Mes',
+                data: {{ data_ventas_mes|safe }},
+                borderColor: '#28a745',
+                backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                fill: true,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
             scales: {
                 y: {
                     beginAtZero: true
@@ -56,5 +292,25 @@
             }
         }
     });
+
+    // Gráfico 4: Ventas por Categoría
+    var ctx4 = document.getElementById('graficoVentasCategoria').getContext('2d');
+    var graficoVentasCategoria = new Chart(ctx4, {
+        type: 'pie',
+        data: {
+            labels: {{ labels_ventas_categoria|safe }},
+            datasets: [{
+                label: 'Ventas por Categoría',
+                data: {{ data_ventas_categoria|safe }},
+                backgroundColor: ['#ff8c00', '#32cd32', '#00bfff', '#ff1493', '#8a2be2'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+
+   
 </script>
-{% endblock %}
+{% endblock %}

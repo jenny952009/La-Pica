@@ -17,3 +17,4 @@ xhtml2pdf
 #pip install django-jazzmin
 #pip install django-admin-charts
 #pip install Django==4.2     esto evita mariadb 10.5
+#pip install pandas openpyxl xlsxwriter

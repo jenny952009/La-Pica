@@ -31,3 +31,4 @@ class CarritoItemAdmin(admin.ModelAdmin):
 
 admin.site.register(CarritoItem, CarritoItemAdmin)
 
+
