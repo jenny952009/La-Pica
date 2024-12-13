@@ -2,9 +2,7 @@ from django.db.models import Sum, Count
 from django.db.models.functions import TruncDay, TruncMonth
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
-from datetime import datetime
 from django.utils import timezone
-
 from pedido.models import Pedido, PedidoProducto
 from .forms import FiltroVentasForm  # Asegúrate de que este formulario esté definido correctamente
 from django.shortcuts import render, redirect
@@ -20,8 +18,11 @@ from carrito.models import CarritoItem
 from tienda.models import Producto
 from .models import Pedido, Pago, PedidoProducto
 from .forms import PedidoForm, FiltroVentasForm
+import json
 
-#import datetime
+# Python imports
+import datetime  # Para usar métodos como datetime.datetime y datetime.date
+from datetime import time  # Para funciones específicas como time.min y time.max
 import json
 
 
@@ -241,7 +242,6 @@ def pedido_completo(request):
 #------------graficos--------------------------------    
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncMonth
-from django.shortcuts import render
 from .forms import FiltroVentasForm
 from .models import Pedido, PedidoProducto, Producto
 from django.utils.timezone import make_aware
@@ -271,8 +271,11 @@ def dashboard_ventas(request):
         
     # Obtener la fecha de hoy con la zona horaria correcta
     today = timezone.localdate()  # Esto devuelve solo la fecha sin la hora
-    today_start = timezone.make_aware(datetime.combine(today, datetime.min.time()))  # Inicio de hoy
-    today_end = timezone.make_aware(datetime.combine(today, datetime.max.time()))  # Fin de hoy
+    #today_start = timezone.make_aware(datetime.combine(today, datetime.min.time()))  # Inicio de hoy
+    #today_end = timezone.make_aware(datetime.combine(today, datetime.max.time()))  # Fin de hoy
+    # Definir el inicio y fin de hoy
+    today_start = make_aware(datetime.datetime.combine(today, datetime.time.min))  # Inicio de hoy
+    today_end = make_aware(datetime.datetime.combine(today, datetime.time.max))  # Fin de hoy
 
     # 1. Pedidos nuevos (compras en línea)
     nuevos_pedidos = Pedido.objects.filter(created_at__gte=today_start, created_at__lte=today_end)
@@ -283,8 +286,9 @@ def dashboard_ventas(request):
     total_ventas_diarias = int(total_ventas_diarias)
     # 3. Total del mes en ventas
     # Obtener el primer día del mes actual
-    hoy = timezone.localdate()  # Fecha de hoy
-    primer_dia_mes = hoy.replace(day=1)  # Primer día del mes actual
+    #hoy = timezone.localdate()  # Fecha de hoy
+    primer_dia_mes = today.replace(day=1)  # Primer día del mes actual
+    
     # Obtener las ventas del mes actual
     ventas_mes_actual = pedidos.filter(created_at__gte=primer_dia_mes).aggregate(total_ventas=Sum('pedido_total'))
     # Extraer el total de ventas del mes actual
