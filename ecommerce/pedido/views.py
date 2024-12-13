@@ -320,24 +320,11 @@ def dashboard_ventas(request):
     labels_ventas_categoria = [venta['producto__categoria__categoria_nombre'] for venta in ventas_por_categoria]
     data_ventas_categoria = [venta['total'] for venta in ventas_por_categoria]
 
-    # Gráfico 5: Clientes más activos (suponemos que Cliente está relacionado con Pedido)
-    clientes_mas_activos = pedidos.values('user__nombre') \
-        .annotate(total=Count('id')) \
-        .order_by('-total')[:5]
-
-    labels_clientes = [cliente['user__nombre'] for cliente in clientes_mas_activos]
-    data_clientes = [cliente['total'] for cliente in clientes_mas_activos]
-
-    # Gráfico 6: Stock de productos
-    stock = PedidoProducto.objects.filter(pedido__in=pedidos) \
-        .values('producto__producto_nombre', 'producto__stock') \
-        .annotate(total=Sum('cantidad')) \
-        .order_by('-total')
-
-    # Preparar las etiquetas y los datos para el gráfico
-    labels_stock = [venta['producto__producto_nombre'] for venta in stock]  # Nombre del producto
-    data_stock = [venta['total'] for venta in stock]  # Total de la cantidad vendida
-
+    # Gráfico 5: Stock de productos (integración con app tienda)
+    productos_stock = Producto.objects.all()
+    labels_stock = [producto.producto_nombre for producto in productos_stock]
+    data_stock = [producto.stock for producto in productos_stock]
+ 
     # Preparar el contexto para renderizar
     context = {
         'form': form,
@@ -353,16 +340,12 @@ def dashboard_ventas(request):
         # Datos para el gráfico de ventas por categoría
         'labels_ventas_categoria': labels_ventas_categoria,
         'data_ventas_categoria': data_ventas_categoria,
-        # Datos para el gráfico de clientes más activos
-        'labels_clientes': labels_clientes,
-        'data_clientes': data_clientes,
-        # Datos para el gráfico de stock de productos
-        'labels_stock': labels_stock,
-        'data_stock': data_stock,
+       
         'total_nuevos_pedidos': total_nuevos_pedidos,
         'total_ventas_diarias': total_ventas_diarias,
         'total_ventas_mes': total_ventas_mes,
-       
+        'labels_stock': labels_stock,
+        'data_stock': data_stock,
     }
 
     return render(request, 'dashboard_ventas.html', context)

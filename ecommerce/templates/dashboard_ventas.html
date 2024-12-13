@@ -153,39 +153,34 @@
             </div>
         </div>
     </div>
-
-    <div class="row">
-        <!-- Gráfico 5: Clientes Más Activos -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-header bg-secondary text-white">
-                    <h5 class="card-title mb-0">Clientes Más Activos</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="graficoClientes"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Gráfico 6: Stock de Productos -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-header bg-dark text-white">
-                    <h5 class="card-title mb-0">Stock de Productos</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="graficoStock"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
-
+<!-- Gráfico de stock de productos -->
+<h3>Stock de Productos</h3>
+<canvas id="stockChart" width="400" height="200"></canvas>
+    
 <!-- Incluir los gráficos de JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    
+    const ctxStock = document.getElementById('stockChart').getContext('2d');
+    new Chart(ctxStock, {
+        type: 'bar',
+        data: {
+            labels: {{ labels_stock|safe }},
+            datasets: [{
+                label: 'Stock Disponible',
+                data: {{ data_stock|safe }},
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: { beginAtZero: true },
+                y: { beginAtZero: true }
+            }
+        }
+    });
     // Gráfico 1: Ventas por Estado
     var ctxEstados = document.getElementById('chartEstados').getContext('2d');
     var graficoEstado = new Chart(ctxEstados, {
@@ -283,52 +278,6 @@
         }
     });
 
-    // Gráfico 5: Clientes Más Activos
-    var ctx5 = document.getElementById('graficoClientes').getContext('2d');
-    var graficoClientes = new Chart(ctx5, {
-        type: 'bar',
-        data: {
-            labels: {{ labels_clientes|safe }},
-            datasets: [{
-                label: 'Clientes Más Activos',
-                data: {{ data_clientes|safe }},
-                backgroundColor: '#ffc107',
-                borderColor: '#ffc107',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-
-    // Gráfico 6: Stock de Productos
-    var ctx6 = document.getElementById('graficoStock').getContext('2d');
-    var graficoStock = new Chart(ctx6, {
-        type: 'bar',
-        data: {
-            labels: {{ labels_stock|safe }},
-            datasets: [{
-                label: 'Stock de Productos',
-                data: {{ data_stock|safe }},
-                backgroundColor: '#17a2b8',
-                borderColor: '#17a2b8',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                x: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
+   
 </script>
 {% endblock %}
